@@ -12,6 +12,7 @@ class Order extends Model
         'user_id',
         'order_number',
         'status',
+        'payment_status',
         'subtotal',
         'tax',
         'shipping',
@@ -23,6 +24,8 @@ class Order extends Model
         'shipping_address',
         'notes',
         'paid_at',
+        'payment_method',
+        'payment_intent_id',
     ];
 
     protected $casts = [

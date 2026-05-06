@@ -1,0 +1,210 @@
+@extends('admin.layout')
+
+@section('page-title', 'Settings')
+
+@section('content')
+<div class="bg-white rounded-lg shadow overflow-hidden">
+    <div class="p-6">
+        @if(session('success'))
+        <div class="mb-4 p-4 bg-green-100 text-green-700 rounded-lg">{{ session('success') }}</div>
+        @endif
+        
+        <form method="POST" action="{{ route('admin.settings.update') }}" enctype="multipart/form-data">
+            @csrf
+            
+            <h2 class="text-xl font-bold mb-6">Site Branding</h2>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Logo (Image)</label>
+                    <div class="mt-1 flex items-start gap-4">
+                        <div id="logo-preview" class="h-16 w-auto border rounded overflow-hidden flex items-center justify-center bg-gray-50 {{ !$settings['logo'] ? 'p-4' : '' }}">
+                            @if($settings['logo'])
+                            <img src="{{ $settings['logo'] }}" alt="Logo" class="h-16 w-auto object-contain">
+                            @else
+                            <span class="text-gray-400 text-xs">No logo</span>
+                            @endif
+                        </div>
+                        <div class="space-y-2">
+                            <button type="button" onclick="selectFromLibrary('logo')" class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 text-sm">
+                                Choose from Library
+                            </button>
+                            <input type="hidden" name="logo_url" id="logo-url" value="{{ $settings['logo'] }}">
+                        </div>
+                    </div>
+                    <small class="text-gray-500">Recommended size: 200x60px</small>
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Favicon (ICO/PNG)</label>
+                    <div class="mt-1 flex items-start gap-4">
+                        <div id="favicon-preview" class="h-10 w-10 border rounded overflow-hidden flex items-center justify-center bg-gray-50 {{ !$settings['favicon'] ? 'p-2' : '' }}">
+                            @if($settings['favicon'])
+                            <img src="{{ $settings['favicon'] }}" alt="Favicon" class="h-10 w-10 object-contain">
+                            @else
+                            <span class="text-gray-400 text-xs">No favicon</span>
+                            @endif
+                        </div>
+                        <div class="space-y-2">
+                            <button type="button" onclick="selectFromLibrary('favicon')" class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 text-sm">
+                                Choose from Library
+                            </button>
+                            <input type="hidden" name="favicon_url" id="favicon-url" value="{{ $settings['favicon'] }}">
+                        </div>
+                    </div>
+                    <small class="text-gray-500">Recommended size: 32x32px or 16x16px</small>
+                </div>
+            </div>
+            
+            <hr class="my-8">
+            
+            <h2 class="text-xl font-bold mb-6">Home Page SEO</h2>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+                <div class="md:col-span-2">
+                    <label class="block text-sm font-medium text-gray-700 mb-1">SEO Title</label>
+                    <input type="text" name="seo_title" value="{{ $settings['seo_title'] }}"
+                        class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                        placeholder="{{ $settings['company_name'] }} - Your Title Here">
+                    <small class="text-gray-500">Recommended: 50-60 characters</small>
+                </div>
+                <div class="md:col-span-2">
+                    <label class="block text-sm font-medium text-gray-700 mb-1">SEO Description</label>
+                    <textarea name="seo_description" rows="3" maxlength="160"
+                        class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                        placeholder="Your meta description here...">{{ $settings['seo_description'] }}</textarea>
+                    <small class="text-gray-500"><span id="descCount">{{ strlen($settings['seo_description']) }}</span>/160 characters</small>
+                </div>
+                <div class="md:col-span-2">
+                    <label class="block text-sm font-medium text-gray-700 mb-1">SEO Keywords</label>
+                    <input type="text" name="seo_keywords" value="{{ $settings['seo_keywords'] }}"
+                        class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                        placeholder="printing, business cards, banners, sublimation...">
+                    <small class="text-gray-500">Separate keywords with commas</small>
+                </div>
+            </div>
+            
+            <hr class="my-8">
+            
+            <h2 class="text-xl font-bold mb-6">Stripe Payment Settings</h2>
+            
+            <div class="mb-6">
+                <label class="flex items-center gap-3 cursor-pointer">
+                    <input type="checkbox" name="stripe_enabled" value="1" {{ $settings['stripe_enabled'] === '1' ? 'checked' : '' }}
+                        class="w-5 h-5 text-blue-600 rounded border-gray-300 focus:ring-blue-500">
+                    <span class="font-medium">Enable Stripe Payment</span>
+                </label>
+            </div>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Publishable Key</label>
+                    <input type="text" name="stripe_key" value="{{ $settings['stripe_key'] }}"
+                        class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                        placeholder="pk_test_...">
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Secret Key</label>
+                    <input type="password" name="stripe_secret" 
+                        class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                        placeholder="sk_test_...">
+                    <small class="text-gray-500">Leave blank to keep current secret</small>
+                </div>
+                <div class="md:col-span-2">
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Webhook Secret</label>
+                    <input type="password" name="stripe_webhook_secret" 
+                        class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                        placeholder="whsec_...">
+                </div>
+            </div>
+            
+            <hr class="my-8">
+            
+            <h2 class="text-xl font-bold mb-6">Payment Methods</h2>
+            
+            <div class="space-y-6 mb-8">
+                <div>
+                    <label class="flex items-center gap-3 cursor-pointer">
+                        <input type="checkbox" name="cod_enabled" value="1" {{ $settings['cod_enabled'] === '1' ? 'checked' : '' }}
+                            class="w-5 h-5 text-blue-600 rounded border-gray-300 focus:ring-blue-500">
+                        <span class="font-medium">Enable Cash on Delivery (COD)</span>
+                    </label>
+                    <p class="text-sm text-gray-500 ml-8">Allow customers to pay upon delivery</p>
+                </div>
+            </div>
+            
+            <hr class="my-8">
+            
+            <h2 class="text-xl font-bold mb-6">Company Information</h2>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Company Name</label>
+                    <input type="text" name="company_name" value="{{ $settings['company_name'] }}"
+                        class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Email</label>
+                    <input type="email" name="company_email" value="{{ $settings['company_email'] }}"
+                        class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Phone</label>
+                    <input type="text" name="company_phone" value="{{ $settings['company_phone'] }}"
+                        class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Tax Rate (%)</label>
+                    <input type="number" name="tax_rate" value="{{ $settings['tax_rate'] }}" step="0.01"
+                        class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Shipping Cost ($)</label>
+                    <input type="number" name="shipping_cost" value="{{ $settings['shipping_cost'] }}" step="0.01"
+                        class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                </div>
+                <div class="md:col-span-2">
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Address</label>
+                    <textarea name="company_address" rows="3"
+                        class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 wysiwyg">{{ $settings['company_address'] }}</textarea>
+                </div>
+            </div>
+            
+            <div class="flex justify-end">
+                <button type="submit" class="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 font-medium">
+                    Save Settings
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    var descTextarea = document.querySelector('textarea[name="seo_description"]');
+    var descCount = document.getElementById('descCount');
+    if (descTextarea && descCount) {
+        descTextarea.addEventListener('input', function() {
+            descCount.textContent = this.value.length;
+        });
+    }
+});
+<script>
+function selectFromLibrary(prefix) {
+    openMediaLibrary({
+        mode: 'single',
+        callback: function(ids) {
+            var img = mediaLibraryState.allImages.find(i => i.id === ids[0]);
+            if (img) {
+                document.getElementById(prefix + '-url').value = img.url;
+                var suffix = '';
+                if (prefix === 'logo') suffix = 'Logo" class="h-16 w-auto object-contain';
+                if (prefix === 'favicon') suffix = 'Favicon" class="h-10 w-10 object-contain';
+                document.getElementById(prefix + '-preview').innerHTML = '<img src="' + img.url + '" alt="' + suffix + '">';
+            }
+        }
+    });
+}
+</script>
+
+@include('admin.partials.media-library')
+@endsection

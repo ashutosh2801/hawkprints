@@ -25,15 +25,14 @@ class TestimonialController extends Controller
             'name' => 'required|string|max:255',
             'company' => 'nullable|string|max:255',
             'message' => 'required|string',
-            'avatar' => 'nullable|file|image',
+            'avatar_url' => 'nullable|string',
             'is_active' => 'nullable|boolean',
         ]);
 
         $validated['is_active'] = $request->boolean('is_active', true);
 
-        if ($request->hasFile('avatar')) {
-            $path = $request->file('avatar')->store('testimonials', 'public');
-            $validated['avatar'] = '/storage/' . $path;
+        if ($request->avatar_url) {
+            $validated['avatar'] = $request->avatar_url;
         }
 
         Testimonial::create($validated);
@@ -53,15 +52,14 @@ class TestimonialController extends Controller
             'name' => 'required|string|max:255',
             'company' => 'nullable|string|max:255',
             'message' => 'required|string',
-            'avatar' => 'nullable|file|image',
+            'avatar_url' => 'nullable|string',
             'is_active' => 'nullable|boolean',
         ]);
 
         $validated['is_active'] = $request->boolean('is_active', true);
 
-        if ($request->hasFile('avatar')) {
-            $path = $request->file('avatar')->store('testimonials', 'public');
-            $validated['avatar'] = '/storage/' . $path;
+        if ($request->avatar_url) {
+            $validated['avatar'] = $request->avatar_url;
         }
 
         $testimonial->update($validated);

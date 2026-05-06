@@ -8,6 +8,7 @@ use App\Models\Product;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Log;
+use Intervention\Image\Laravel\Facades\Image;
 
 class ProductImageController extends Controller
 {
@@ -15,23 +16,16 @@ class ProductImageController extends Controller
     {
         $productId = $request->input('product_id');
         
-        // Log debug info
-        $logMsg = "Image upload attempt - product_id: " . ($productId ?? 'null') . ", files: " . ($request->hasFile('images') ? 'yes' : 'no');
-        Log::info($logMsg);
-        
         if (!$productId) {
-            Log::error('No product_id in request');
             return back()->with('error', 'Product ID missing');
         }
         
         $product = Product::find($productId);
         if (!$product) {
-            Log::error('Product not found: ' . $productId);
             return back()->with('error', 'Product not found');
         }
         
         if (!$request->hasFile('images')) {
-            Log::error('No images in request');
             return back()->with('error', 'Please select an image');
         }
         
@@ -47,10 +41,17 @@ class ProductImageController extends Controller
             
             $filename = uniqid() . '.' . $file->getClientOriginalExtension();
             
-            // Save to storage
-            $file->storeAs('products', $filename, 'public');
-            $file->storeAs('products/small', $filename, 'public');
-            $file->storeAs('products/medium', $filename, 'public');
+            $originalImage = Image::read($file);
+            
+            $originalImage->save(storage_path('app/public/products/' . $filename));
+            
+            $smallImage = clone $originalImage;
+            $smallImage->scale(width: 300);
+            $smallImage->save(storage_path('app/public/products/small/' . $filename));
+            
+            $mediumImage = clone $originalImage;
+            $mediumImage->scale(width: 600);
+            $mediumImage->save(storage_path('app/public/products/medium/' . $filename));
             
             ProductImage::create([
                 'product_id' => $productId,
@@ -60,8 +61,6 @@ class ProductImageController extends Controller
                 'sort_order' => ++$maxOrder,
                 'is_active' => true,
             ]);
-            
-            Log::info('Saved image: ' . $filename);
         }
         
         return back()->with('success', count($files) . ' image(s) uploaded!');
@@ -70,7 +69,7 @@ class ProductImageController extends Controller
     public function destroy(ProductImage $image)
     {
         $imagePaths = [$image->image, $image->small, $image->medium];
-        
+
         foreach ($imagePaths as $path) {
             if ($path) {
                 $storagePath = str_replace('/storage/', '', $path);
@@ -81,9 +80,31 @@ class ProductImageController extends Controller
                 }
             }
         }
-        
+
         $image->delete();
-        
+
         return back()->with('success', 'Image deleted.');
+    }
+
+    public function attach(Request $request, Product $product)
+    {
+        $request->validate([
+            'image_ids' => 'required|array',
+            'image_ids.*' => 'exists:product_images,id',
+        ]);
+
+        $maxOrder = $product->images()->max('sort_order') ?? 0;
+
+        foreach ($request->image_ids as $imageId) {
+            $image = ProductImage::find($imageId);
+            if ($image && !$image->product_id) {
+                $image->update([
+                    'product_id' => $product->id,
+                    'sort_order' => ++$maxOrder,
+                ]);
+            }
+        }
+
+        return response()->json(['success' => true, 'message' => 'Images attached to product.']);
     }
 }

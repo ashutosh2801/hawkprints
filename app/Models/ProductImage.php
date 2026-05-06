@@ -12,6 +12,8 @@ class ProductImage extends Model
         'image',
         'small',
         'medium',
+        'alt',
+        'title',
         'sort_order',
         'is_primary',
         'is_active',

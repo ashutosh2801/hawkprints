@@ -26,16 +26,15 @@ class SliderController extends Controller
             'subtitle' => 'nullable|string|max:255',
             'link_url' => 'nullable|string|max:255',
             'button_text' => 'nullable|string|max:50',
-            'image' => 'nullable|file|image',
+            'image_url' => 'nullable|string',
             'is_active' => 'nullable|boolean',
         ]);
 
         $validated['is_active'] = $request->boolean('is_active', true);
         $validated['sort_order'] = 0;
 
-        if ($request->hasFile('image')) {
-            $path = $request->file('image')->store('sliders', 'public');
-            $validated['image'] = '/storage/' . $path;
+        if ($request->image_url) {
+            $validated['image'] = $request->image_url;
         }
 
         Slider::create($validated);
@@ -56,15 +55,14 @@ class SliderController extends Controller
             'subtitle' => 'nullable|string|max:255',
             'link_url' => 'nullable|string|max:255',
             'button_text' => 'nullable|string|max:50',
-            'image' => 'nullable|file|image',
+            'image_url' => 'nullable|string',
             'is_active' => 'nullable|boolean',
         ]);
 
         $validated['is_active'] = $request->boolean('is_active', true);
 
-        if ($request->hasFile('image')) {
-            $path = $request->file('image')->store('sliders', 'public');
-            $validated['image'] = '/storage/' . $path;
+        if ($request->image_url) {
+            $validated['image'] = $request->image_url;
         }
 
         $slider->update($validated);

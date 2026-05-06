@@ -11,8 +11,10 @@ class PricingOption extends Model
         'product_id',
         'option_name',
         'option_type',
+        'input_type',
         'choices',
         'prices',
+        'conditions',
         'is_required',
         'sort_order',
     ];
@@ -20,8 +22,14 @@ class PricingOption extends Model
     protected $casts = [
         'choices' => 'array',
         'prices' => 'array',
+        'conditions' => 'array',
         'is_required' => 'boolean',
     ];
+
+    public function getInputTypeAttribute($value)
+    {
+        return $value ?? 'dropdown';
+    }
 
     public function product(): BelongsTo
     {

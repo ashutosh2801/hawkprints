@@ -44,6 +44,14 @@
                                                     @if($item['variant_name'])
                                                         <p class="text-sm text-gray-500">{{ $item['variant_name'] }}</p>
                                                     @endif
+                                                    @if(!empty($item['pricing_options']))
+                                                        @php
+                                                            $formattedOptions = App\Services\CartService::getFormattedPricingOptionsFromItem($item['pricing_options']);
+                                                        @endphp
+                                                        @foreach($formattedOptions as $option)
+                                                            <p class="text-sm text-gray-500">{{ $option }}</p>
+                                                        @endforeach
+                                                    @endif
                                                 </div>
                                             </div>
                                         </td>
@@ -77,23 +85,68 @@
                 <div>
                     <div class="bg-white rounded-lg shadow-lg p-6">
                         <h2 class="text-xl font-bold mb-4">Order Summary</h2>
+
+                        <div class="mb-4">
+                            <form id="coupon-form" class="flex gap-2">
+                                @csrf
+                                <input type="text" id="coupon-code" name="code" placeholder="Enter coupon code" class="flex-1 px-3 py-2 border rounded-lg text-sm @if($coupon) bg-gray-100 @endif" @if($coupon) readonly @endif>
+                                @if($coupon)
+                                    <button type="button" onclick="removeCoupon()" class="px-4 py-2 bg-red-500 hover:bg-red-600 text-white rounded-lg text-sm">Remove</button>
+                                @else
+                                    <button type="submit" class="px-4 py-2 bg-blue-700 hover:bg-blue-800 text-white rounded-lg text-sm">Apply</button>
+                                @endif
+                            </form>
+                            <p id="coupon-message" class="mt-2 text-sm"></p>
+                        </div>
+
+                        <div class="mb-4">
+                            <h3 class="text-sm font-medium text-gray-700 mb-2">Shipping Method</h3>
+                            <div id="shipping-options" class="space-y-2">
+                                @forelse($shippingMethods as $method)
+                                <label class="flex items-center justify-between p-3 border rounded-lg cursor-pointer hover:bg-gray-50 shipping-option {{ $selectedShipping && $selectedShipping->name === $method['name'] ? 'border-blue-500 bg-blue-50' : '' }}">
+                                    <div class="flex items-center gap-3">
+                                        <input type="radio" name="shipping" value="{{ $method['name'] }}" class="shipping-radio" {{ $selectedShipping && $selectedShipping->name === $method['name'] ? 'checked' : '' }}>
+                                        <div>
+                                            <span class="font-medium">{{ $method['name'] }}</span>
+                                            @if($method['estimated_days'])
+                                                <span class="text-sm text-gray-500 ml-2">({{ $method['estimated_days'] }})</span>
+                                            @endif
+                                            @if($method['description'])
+                                                <p class="text-sm text-gray-500">{{ $method['description'] }}</p>
+                                            @endif
+                                        </div>
+                                    </div>
+                                    <span class="font-medium">${{ number_format($method['price'], 2) }}</span>
+                                </label>
+                                @empty
+                                <p class="text-sm text-gray-500">No shipping methods available</p>
+                                @endforelse
+                            </div>
+                        </div>
+
                         <div class="space-y-3">
                             <div class="flex justify-between">
                                 <span class="text-gray-600">Subtotal</span>
                                 <span class="font-medium">${{ number_format($subtotal, 2) }}</span>
                             </div>
+                            @if($discount > 0)
+                            <div class="flex justify-between text-green-600">
+                                <span>Discount</span>
+                                <span class="font-medium">-${{ number_format($discount, 2) }}</span>
+                            </div>
+                            @endif
+                            <div class="flex justify-between">
+                                <span class="text-gray-600">Shipping</span>
+                                <span id="shipping-cost" class="font-medium">${{ number_format($shippingCost, 2) }}</span>
+                            </div>
                             <div class="flex justify-between">
                                 <span class="text-gray-600">Tax (13%)</span>
                                 <span class="font-medium">${{ number_format($tax, 2) }}</span>
                             </div>
-                            <div class="flex justify-between">
-                                <span class="text-gray-600">Shipping</span>
-                                <span class="font-medium">Calculated at checkout</span>
-                            </div>
                             <hr>
                             <div class="flex justify-between text-lg font-bold">
                                 <span>Total</span>
-                                <span>${{ number_format($total, 2) }}</span>
+                                <span id="cart-total">${{ number_format($total, 2) }}</span>
                             </div>
                         </div>
                         <a href="{{ route('checkout.index') }}" class="mt-6 block w-full py-3 bg-blue-700 hover:bg-blue-800 text-white text-center rounded-lg font-semibold">
@@ -141,5 +194,74 @@ function updateQuantity(itemKey, quantity) {
         }
     });
 }
+
+document.getElementById('coupon-form')?.addEventListener('submit', function(e) {
+    e.preventDefault();
+    const code = document.getElementById('coupon-code').value.trim();
+    if (!code) return;
+
+    fetch('/cart/apply-coupon', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRF-TOKEN': '{{ csrf_token() }}'
+        },
+        body: JSON.stringify({ code: code })
+    })
+    .then(response => response.json())
+    .then(data => {
+        const messageEl = document.getElementById('coupon-message');
+        if (data.success) {
+            messageEl.className = 'mt-2 text-sm text-green-600';
+            messageEl.textContent = 'Coupon applied successfully!';
+            location.reload();
+        } else {
+            messageEl.className = 'mt-2 text-sm text-red-600';
+            messageEl.textContent = data.message || 'Invalid coupon';
+        }
+    });
+});
+
+function removeCoupon() {
+    fetch('/cart/remove-coupon', {
+        method: 'DELETE',
+        headers: {
+            'X-CSRF-TOKEN': '{{ csrf_token() }}'
+        }
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            location.reload();
+        }
+    });
+}
+
+document.querySelectorAll('.shipping-option input[type="radio"]').forEach(function(radio) {
+    radio.addEventListener('change', function() {
+        const method = this.value;
+        
+        document.querySelectorAll('.shipping-option').forEach(function(el) {
+            el.classList.remove('border-blue-500', 'bg-blue-50');
+        });
+        this.closest('.shipping-option').classList.add('border-blue-500', 'bg-blue-50');
+
+        fetch('/cart/set-shipping', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRF-TOKEN': '{{ csrf_token() }}'
+            },
+            body: JSON.stringify({ method: method })
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                document.getElementById('shipping-cost').textContent = '$' + data.shipping_cost.toFixed(2);
+                document.getElementById('cart-total').textContent = '$' + data.total.toFixed(2);
+            }
+        });
+    });
+});
 </script>
 @endpush

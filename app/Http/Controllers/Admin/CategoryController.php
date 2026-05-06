@@ -28,7 +28,7 @@ class CategoryController extends Controller
         $validated = $request->validate([
             'name' => 'required|string|max:255',
             'description' => 'nullable|string',
-            'image' => 'nullable|file|image',
+            'image_url' => 'nullable|string',
             'is_active' => 'nullable|boolean',
         ]);
 
@@ -36,9 +36,8 @@ class CategoryController extends Controller
         $validated['is_active'] = $request->boolean('is_active', true);
         $validated['sort_order'] = 0;
 
-        if ($request->hasFile('image')) {
-            $path = $request->file('image')->store('categories', 'public');
-            $validated['image'] = '/storage/' . $path;
+        if ($request->image_url) {
+            $validated['image'] = $request->image_url;
         }
 
         Category::create($validated);
@@ -57,16 +56,15 @@ class CategoryController extends Controller
         $validated = $request->validate([
             'name' => 'required|string|max:255',
             'description' => 'nullable|string',
-            'image' => 'nullable|file|image',
+            'image_url' => 'nullable|string',
             'is_active' => 'nullable|boolean',
         ]);
 
         $validated['slug'] = \Illuminate\Support\Str::slug($request->name);
         $validated['is_active'] = $request->boolean('is_active', true);
 
-        if ($request->hasFile('image')) {
-            $path = $request->file('image')->store('categories', 'public');
-            $validated['image'] = '/storage/' . $path;
+        if ($request->image_url) {
+            $validated['image'] = $request->image_url;
         }
 
         $category->update($validated);

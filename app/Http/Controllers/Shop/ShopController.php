@@ -13,7 +13,7 @@ class ShopController extends Controller
     {
         $query = Product::where('is_active', true);
 
-        if ($request->has('search')) {
+        if ($request->has('search') && $request->search) {
             $search = $request->search;
             $query->where(function($q) use ($search) {
                 $q->where('name', 'like', "%{$search}%")
@@ -21,21 +21,47 @@ class ShopController extends Controller
             });
         }
 
-        if ($request->has('category')) {
-            $category = Category::where('slug', $request->category)->first();
-            if ($category) {
-                $query->where('category_id', $category->id);
-            }
+        if ($request->has('categories') && $request->categories) {
+            $categorySlugs = is_array($request->categories) ? $request->categories : [$request->categories];
+            $categories = Category::whereIn('slug', $categorySlugs)->pluck('id');
+            $query->whereIn('category_id', $categories);
         }
 
-        $products = $query->orderBy('created_at', 'desc')->paginate(12);
+        if ($request->has('min_price') && $request->min_price) {
+            $query->where('base_price', '>=', $request->min_price);
+        }
 
-        return view('shop.index', compact('products'));
+        if ($request->has('max_price') && $request->max_price) {
+            $query->where('base_price', '<=', $request->max_price);
+        }
+
+        if ($request->has('in_stock') && $request->in_stock) {
+            $query->where('in_stock', true);
+        }
+
+        switch ($request->sort) {
+            case 'price_low':
+                $query->orderBy('base_price', 'asc');
+                break;
+            case 'price_high':
+                $query->orderBy('base_price', 'desc');
+                break;
+            case 'name':
+                $query->orderBy('name', 'asc');
+                break;
+            default:
+                $query->orderBy('created_at', 'desc');
+        }
+
+        $products = $query->paginate(12);
+        $categories = Category::where('is_active', true)->withCount('products')->get();
+
+        return view('shop.index', compact('products', 'categories'));
     }
 
     public function category($slug)
     {
-        $category = Category::where('slug', $slug)->with('products')->firstOrFail();
+        $category = Category::where('slug', $slug)->firstOrFail();
         $products = $category->products()->where('is_active', true)->paginate(12);
 
         return view('shop.category', compact('category', 'products'));
@@ -44,19 +70,22 @@ class ShopController extends Controller
 public function product($slug)
     {
         $product = Product::where('slug', $slug)
-            ->with(['variants', 'images', 'category', 'pricingOptions'])
+            ->with(['variants', 'productImages', 'category', 'pricingOptions'])
             ->firstOrFail();
         
-        // Ensure images are loaded
-        if (!$product->relationLoaded('images')) {
-            $product->load('images');
+        if ($product->category_id) {
+            $relatedProducts = Product::where('category_id', $product->category_id)
+                ->where('id', '!=', $product->id)
+                ->where('is_active', true)
+                ->take(4)
+                ->get();
+        } else {
+            $relatedProducts = Product::where('id', '!=', $product->id)
+                ->where('is_active', true)
+                ->inRandomOrder()
+                ->take(4)
+                ->get();
         }
-        
-        $relatedProducts = Product::where('category_id', $product->category_id)
-            ->where('id', '!=', $product->id)
-            ->where('is_active', true)
-            ->take(4)
-            ->get();
         
         return view('shop.product', compact('product', 'relatedProducts'));
     }

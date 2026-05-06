@@ -25,6 +25,8 @@ class Product extends Model
         'stock_quantity',
         'meta_title',
         'meta_description',
+        'allow_artwork_upload',
+        'artwork_instructions',
     ];
 
     protected $casts = [
@@ -34,6 +36,7 @@ class Product extends Model
         'images' => 'array',
         'base_price' => 'decimal:2',
         'sale_price' => 'decimal:2',
+        'allow_artwork_upload' => 'boolean',
     ];
 
     public function category(): BelongsTo
@@ -48,7 +51,12 @@ class Product extends Model
 
     public function images(): HasMany
     {
-        return $this->hasMany(ProductImage::class)->orderBy('sort_order');
+        return $this->hasMany(ProductImage::class, 'product_id')->orderBy('sort_order');
+    }
+
+    public function productImages(): HasMany
+    {
+        return $this->hasMany(ProductImage::class, 'product_id')->orderBy('sort_order');
     }
 
     public function pricingOptions(): HasMany
@@ -71,14 +79,13 @@ class Product extends Model
         if ($this->image) {
             return $this->image;
         }
-        
-        // Check if we have product images
-        $productImages = $this->images()->first();
+
+        $productImages = $this->productImages()->first();
         if ($productImages && $productImages->image) {
             return $productImages->image;
         }
-        
-        return 'https://placehold.co/400x400?text=No+Image';
+
+        return '';
     }
 
     public function getCalculatedPriceAttribute(): float

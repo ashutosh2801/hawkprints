@@ -32,7 +32,7 @@
                         <div class="relative aspect-square overflow-hidden bg-gray-100">
                             <img src="{{ $product->primary_image }}" alt="{{ $product->name }}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300">
                             @if(!$product->in_stock)
-                                <span class="absolute top-2 left-2 bg-blue-700 text-white text-xs px-2 py-1 rounded">Out of Stock</span>
+                                <span class="absolute top-2 left-2 bg-red-600 text-white text-xs px-2 py-1 rounded">Out of Stock</span>
                             @endif
                         </div>
                         <div class="p-4">
@@ -41,13 +41,19 @@
                         </div>
                     </a>
                     <div class="px-4 pb-4">
-                        <form action="{{ route('cart.add', $product->slug) }}" method="POST">
-                            @csrf
-                            <button type="submit" class="w-full py-2 bg-blue-700 hover:bg-blue-800 text-white rounded font-semibold">
-                                Add to Cart
-                            </button>
-                        </form>
-                    </div>
+                            @if($product->pricingOptions->count() > 0)
+                                <a href="{{ route('shop.product', $product->slug) }}" class="block w-full py-2 bg-blue-700 hover:bg-blue-800 text-white text-center rounded font-semibold">
+                                    Select Options
+                                </a>
+                            @else
+                                <form action="{{ route('cart.add', $product->slug) }}" method="POST">
+                                    @csrf
+                                    <button type="submit" class="w-full py-2 bg-blue-700 hover:bg-blue-800 text-white rounded font-semibold">
+                                        Add to Cart
+                                    </button>
+                                </form>
+                            @endif
+                        </div>
                 </div>
             @empty
                 <div class="col-span-full text-center py-12">
@@ -58,7 +64,7 @@
 
         @if($products->hasPages())
             <div class="mt-8">
-                {{ $products->links() }}
+                {{ $products->appends(request()->query())->links() }}
             </div>
         @endif
     </div>
