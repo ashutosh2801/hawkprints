@@ -1,6 +1,7 @@
 @extends('layouts.app')
 
-@section('title', 'Annual Returns - Hawk Prints')
+@section('title', 'Annual Returns - Five Rivers Print')
+@section('meta_description', 'View Five Rivers Print annual returns and financial transparency documents.')
 
 @section('content')
 <div class="bg-gray-100 py-16">
@@ -8,12 +9,12 @@
         <div class="max-w-4xl mx-auto bg-white rounded-lg shadow-lg p-8 lg:p-12">
             <div class="text-center mb-10">
                 <h1 class="text-4xl font-bold mb-4">Annual Returns</h1>
-                <p class="text-gray-600 text-lg">Corporate filings and annual return information for Hawk Prints Inc.</p>
+                <p class="text-gray-600 text-lg">Corporate filings and annual return information for Five Rivers Print Inc.</p>
             </div>
 
             <div class="prose prose-lg max-w-none text-gray-700">
                 <p class="mb-6">
-                    Hawk Prints Inc. is a corporation registered under the laws of Canada. We are committed to maintaining transparency and complying with all applicable corporate filing requirements.
+                    Five Rivers Print Inc. is a corporation registered under the laws of Canada. We are committed to maintaining transparency and complying with all applicable corporate filing requirements.
                 </p>
 
                 <h2 class="text-2xl font-bold mt-8 mb-4">About Annual Returns</h2>
@@ -27,7 +28,7 @@
                         <tbody class="divide-y divide-gray-200">
                             <tr>
                                 <td class="py-3 font-semibold pr-4">Corporation Name</td>
-                                <td class="py-3">Hawk Prints Inc.</td>
+                                <td class="py-3">Five Rivers Print Inc.</td>
                             </tr>
                             <tr>
                                 <td class="py-3 font-semibold pr-4">Jurisdiction</td>
@@ -56,14 +57,14 @@
 
                 <h2 class="text-2xl font-bold mt-8 mb-4">Compliance</h2>
                 <p class="mb-4">
-                    Hawk Prints Inc. maintains current compliance with all required annual filings. If you are a stakeholder and require documentation of our current filing status, please contact us directly.
+                    Five Rivers Print Inc. maintains current compliance with all required annual filings. If you are a stakeholder and require documentation of our current filing status, please contact us directly.
                 </p>
 
                 <h2 class="text-2xl font-bold mt-8 mb-4">Contact Us</h2>
                 <p class="mb-4">For inquiries regarding our annual returns or corporate filings:</p>
                 <div class="bg-blue-50 border border-blue-200 rounded-lg p-6">
                     <ul class="space-y-2">
-                        <li><strong>Email:</strong> info@hawkprints.ca</li>
+                        <li><strong>Email:</strong> info@fiveriversprint.ca</li>
                         <li><strong>Phone:</strong> 905-744-0013</li>
                         <li><strong>Address:</strong> Brampton, Ontario, Canada</li>
                     </ul>

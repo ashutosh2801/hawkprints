@@ -1,6 +1,7 @@
 @extends('layouts.app')
 
-@section('title', 'Hawk Prints - Shop for All Your Printing Needs')
+@section('title', 'Five Rivers Print - Shop for All Your Printing Needs')
+@section('meta_description', 'One stop for all your printing needs. Business cards, banners, sublimation, flyers, and more quality printing services at competitive prices.')
 
 @section('content')
     @include('front.partials.hero')

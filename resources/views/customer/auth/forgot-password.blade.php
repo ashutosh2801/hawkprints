@@ -1,6 +1,7 @@
 @extends('layouts.app')
 
-@section('title', 'Forgot Password - Hawk Prints')
+@section('title', 'Forgot Password - Five Rivers Print')
+@section('robots', 'noindex, nofollow')
 
 @section('content')
 <div class="min-h-screen bg-gray-50 py-12">

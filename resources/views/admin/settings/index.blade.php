@@ -83,8 +83,55 @@
                 </div>
             </div>
             
+            <div class="bg-gray-50 p-6 rounded-lg mb-8">
+                <h3 class="text-lg font-bold mb-2">Sitemap</h3>
+                <p class="text-sm text-gray-600 mb-4">Generate the sitemap.xml file for search engines. Visit <a href="{{ url('/sitemap.xml') }}" class="text-blue-600 hover:underline" target="_blank">{{ url('/sitemap.xml') }}</a> to view it.</p>
+                <button type="button" onclick="generateSitemap()" id="sitemapBtn" class="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 text-sm font-medium">
+                    Regenerate Sitemap
+                </button>
+                <span id="sitemapStatus" class="ml-3 text-sm"></span>
+            </div>
+
             <hr class="my-8">
-            
+
+            <h2 class="text-xl font-bold mb-6">Social Media &amp; Analytics</h2>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Facebook URL</label>
+                    <input type="url" name="social_facebook" value="{{ $settings['social_facebook'] ?? '' }}"
+                        class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                        placeholder="https://facebook.com/yourpage">
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Twitter/X URL</label>
+                    <input type="url" name="social_twitter" value="{{ $settings['social_twitter'] ?? '' }}"
+                        class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                        placeholder="https://twitter.com/yourhandle">
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Instagram URL</label>
+                    <input type="url" name="social_instagram" value="{{ $settings['social_instagram'] ?? '' }}"
+                        class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                        placeholder="https://instagram.com/yourhandle">
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">LinkedIn URL</label>
+                    <input type="url" name="social_linkedin" value="{{ $settings['social_linkedin'] ?? '' }}"
+                        class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                        placeholder="https://linkedin.com/company/yourpage">
+                </div>
+                <div class="md:col-span-2">
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Tracking Code</label>
+                    <textarea name="tracking_code" rows="4"
+                        class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 font-mono text-sm"
+                        placeholder="Google Analytics or other tracking code (including &lt;script&gt; tags)">{{ $settings['tracking_code'] ?? '' }}</textarea>
+                    <small class="text-gray-500">Will be inserted just before closing &lt;/head&gt; tag. Use full script tags.</small>
+                </div>
+            </div>
+
+            <hr class="my-8">
+
             <h2 class="text-xl font-bold mb-6">Stripe Payment Settings</h2>
             
             <div class="mb-6">
@@ -188,7 +235,38 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 });
+</script>
 <script>
+function generateSitemap() {
+    const btn = document.getElementById('sitemapBtn');
+    const status = document.getElementById('sitemapStatus');
+    btn.disabled = true;
+    btn.textContent = 'Generating...';
+    status.textContent = '';
+    fetch('/admin/generate-sitemap', {
+        method: 'POST',
+        headers: { 'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.content || '' }
+    })
+    .then(res => res.json())
+    .then(data => {
+        if (data.success) {
+            status.className = 'ml-3 text-sm text-green-600';
+            status.textContent = 'Sitemap generated!';
+        } else {
+            status.className = 'ml-3 text-sm text-red-600';
+            status.textContent = 'Failed to generate sitemap.';
+        }
+    })
+    .catch(() => {
+        status.className = 'ml-3 text-sm text-red-600';
+        status.textContent = 'Error generating sitemap.';
+    })
+    .finally(() => {
+        btn.disabled = false;
+        btn.textContent = 'Regenerate Sitemap';
+    });
+}
+
 function selectFromLibrary(prefix) {
     openMediaLibrary({
         mode: 'single',

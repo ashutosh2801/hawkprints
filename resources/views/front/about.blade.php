@@ -1,14 +1,15 @@
 @extends('layouts.app')
 
-@section('title', 'About Us - Hawk Prints')
+@section('title', 'About Us - Five Rivers Print')
+@section('meta_description', 'Learn about Five Rivers Print - your trusted partner for quality printing services. Discover our story, mission, and commitment to excellence.')
 
 @section('content')
 <div class="bg-gray-100 py-16">
     <div class="container mx-auto px-4">
-        <h1 class="text-4xl font-bold text-center mb-8">About Hawk Prints</h1>
+        <h1 class="text-4xl font-bold text-center mb-8">About Five Rivers Print</h1>
         <div class="max-w-3xl mx-auto text-center">
             <p class="text-lg text-gray-700 mb-6">
-                Hawk Print has been helping business owners, professionals, entrepreneurs, and individuals create their custom designs and professional marketing through our products since 2015.
+                Five Rivers Print has been helping business owners, professionals, entrepreneurs, and individuals create their custom designs and professional marketing through our products since 2015.
             </p>
             <p class="text-lg text-gray-700 mb-6">
                 If you can dream about it, we're going to make it happen. Our products let you add your personal touch to any part of your life.

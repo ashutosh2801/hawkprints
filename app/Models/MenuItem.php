@@ -8,7 +8,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class MenuItem extends Model
 {
-    protected $fillable = ['name', 'slug', 'parent_id', 'sort_order', 'is_active', 'type', 'reference_id'];
+    protected $fillable = ['name', 'slug', 'parent_id', 'sort_order', 'is_active', 'type', 'reference_id', 'location'];
 
     protected $casts = ['is_active' => 'boolean'];
 

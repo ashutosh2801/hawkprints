@@ -1,6 +1,7 @@
 @extends('layouts.app')
 
-@section('title', 'Shopping Cart - Hawk Prints')
+@section('title', 'Shopping Cart - Five Rivers Print')
+@section('robots', 'noindex, nofollow')
 
 @section('content')
 <div class="bg-gray-100 py-8">
@@ -63,17 +64,13 @@
                                             </div>
                                         </td>
                                         <td class="px-6 py-4 text-right">${{ number_format($item['price'], 2) }}</td>
-                                        <td class="px-6 py-4 text-right font-medium">${{ number_format($item['price'] * $item['quantity'], 2) }}</td>
+                                        <td id="line-total-{{ $key }}" class="px-6 py-4 text-right font-medium">${{ number_format($item['price'] * $item['quantity'], 2) }}</td>
                                         <td class="px-6 py-4 text-right">
-                                            <form action="{{ route('cart.remove', $key) }}" method="POST">
-                                                @csrf
-                                                @method('DELETE')
-                                                <button type="submit" class="text-blue-600 hover:text-blue-800">
-                                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-4v6m4-4V7m0 4H4m0 0h16"/>
-                                                    </svg>
-                                                </button>
-                                            </form>
+                                            <button onclick="removeItem('{{ $key }}')" class="text-blue-600 hover:text-blue-800">
+                                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-4v6m4-4V7m0 4H4m0 0h16"/>
+                                                </svg>
+                                            </button>
                                         </td>
                                     </tr>
                                 @endforeach
@@ -127,12 +124,12 @@
                         <div class="space-y-3">
                             <div class="flex justify-between">
                                 <span class="text-gray-600">Subtotal</span>
-                                <span class="font-medium">${{ number_format($subtotal, 2) }}</span>
+                                <span id="cart-subtotal" class="font-medium">${{ number_format($subtotal, 2) }}</span>
                             </div>
                             @if($discount > 0)
                             <div class="flex justify-between text-green-600">
                                 <span>Discount</span>
-                                <span class="font-medium">-${{ number_format($discount, 2) }}</span>
+                                <span id="cart-discount" class="font-medium">-${{ number_format($discount, 2) }}</span>
                             </div>
                             @endif
                             <div class="flex justify-between">
@@ -140,8 +137,8 @@
                                 <span id="shipping-cost" class="font-medium">${{ number_format($shippingCost, 2) }}</span>
                             </div>
                             <div class="flex justify-between">
-                                <span class="text-gray-600">Tax (13%)</span>
-                                <span class="font-medium">${{ number_format($tax, 2) }}</span>
+                                <span class="text-gray-600">Tax ({{ number_format($taxRateDisplay, 1) }}%)</span>
+                                <span id="cart-tax" class="font-medium">${{ number_format($tax, 2) }}</span>
                             </div>
                             <hr>
                             <div class="flex justify-between text-lg font-bold">
@@ -176,6 +173,10 @@
 
 @push('scripts')
 <script>
+function formatPrice(value) {
+    return value.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+}
+
 function updateQuantity(itemKey, quantity) {
     if (quantity < 1) return;
 
@@ -186,6 +187,29 @@ function updateQuantity(itemKey, quantity) {
             'X-CSRF-TOKEN': '{{ csrf_token() }}'
         },
         body: JSON.stringify({ quantity: quantity })
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            document.getElementById('cart-subtotal').textContent = '$' + formatPrice(data.subtotal);
+            document.getElementById('cart-tax').textContent = '$' + formatPrice(data.tax);
+            document.getElementById('cart-total').textContent = '$' + formatPrice(data.total);
+            const lineTotalEl = document.getElementById('line-total-' + data.item_key);
+            if (lineTotalEl) lineTotalEl.textContent = '$' + formatPrice(data.item_total);
+            const discountEl = document.getElementById('cart-discount');
+            if (discountEl) discountEl.textContent = '-$' + formatPrice(data.discount);
+        }
+    });
+}
+
+function removeItem(itemKey) {
+    if (!confirm('Are you sure you want to remove this item?')) return;
+
+    fetch(`/cart/remove/${itemKey}`, {
+        method: 'DELETE',
+        headers: {
+            'X-CSRF-TOKEN': '{{ csrf_token() }}'
+        }
     })
     .then(response => response.json())
     .then(data => {
@@ -257,8 +281,10 @@ document.querySelectorAll('.shipping-option input[type="radio"]').forEach(functi
         .then(response => response.json())
         .then(data => {
             if (data.success) {
-                document.getElementById('shipping-cost').textContent = '$' + data.shipping_cost.toFixed(2);
-                document.getElementById('cart-total').textContent = '$' + data.total.toFixed(2);
+                document.getElementById('cart-subtotal').textContent = '$' + formatPrice(data.subtotal);
+                document.getElementById('shipping-cost').textContent = '$' + formatPrice(data.shipping_cost);
+                document.getElementById('cart-tax').textContent = '$' + formatPrice(data.tax);
+                document.getElementById('cart-total').textContent = '$' + formatPrice(data.total);
             }
         });
     });

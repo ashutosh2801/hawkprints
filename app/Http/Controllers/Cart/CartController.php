@@ -29,7 +29,10 @@ class CartController extends Controller
         $coupon = $this->cartService->getCoupon();
         $shippingMethods = $this->cartService->getAvailableShippingMethods();
 
-        return view('cart.index', compact('cart', 'subtotal', 'tax', 'discount', 'shippingCost', 'selectedShipping', 'total', 'coupon', 'shippingMethods'));
+        $rawTaxRate = floatval(\App\Models\Setting::get('tax_rate', '13'));
+        $taxRateDisplay = $rawTaxRate > 1 ? $rawTaxRate : $rawTaxRate * 100;
+
+        return view('cart.index', compact('cart', 'subtotal', 'tax', 'discount', 'shippingCost', 'selectedShipping', 'total', 'coupon', 'shippingMethods', 'taxRateDisplay'));
     }
 
     public function add(Request $request, $slug)
@@ -80,11 +83,19 @@ class CartController extends Controller
         $quantity = (int) $request->quantity;
         $this->cartService->update($itemKey, $quantity);
 
+        $cart = $this->cartService->getCart();
+        $itemTotal = isset($cart[$itemKey]) ? $cart[$itemKey]['price'] * $cart[$itemKey]['quantity'] : 0;
+
         return response()->json([
             'success' => true,
             'cart_count' => $this->cartService->getCount(),
-            'subtotal' => $this->cartService->getFormattedSubtotal(),
-            'total' => $this->cartService->getFormattedTotal(),
+            'subtotal' => $this->cartService->getSubtotal(),
+            'tax' => $this->cartService->getTax(),
+            'discount' => $this->cartService->getDiscount(),
+            'shipping_cost' => $this->cartService->getShippingCost(),
+            'total' => $this->cartService->getTotal(),
+            'item_total' => $itemTotal,
+            'item_key' => $itemKey,
         ]);
     }
 

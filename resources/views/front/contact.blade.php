@@ -1,6 +1,7 @@
 @extends('layouts.app')
 
-@section('title', 'Contact Us - Hawk Prints')
+@section('title', 'Contact Us - Five Rivers Print')
+@section('meta_description', 'Get in touch with Five Rivers Print. Contact us for quotes, questions, or custom printing requests. We are here to help with all your printing needs.')
 
 @section('content')
 <div class="bg-gray-100 py-16">
@@ -10,7 +11,10 @@
         <div class="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-4xl mx-auto">
             <div class="bg-white rounded-lg shadow-lg p-8">
                 <h2 class="text-2xl font-bold mb-6">Get in Touch</h2>
-                <form action="#" method="POST">
+                @if(session('success'))
+                <div class="mb-4 p-4 bg-green-100 text-green-700 rounded-lg">{{ session('success') }}</div>
+                @endif
+                <form action="{{ route('contact.submit') }}" method="POST">
                     @csrf
                     <div class="space-y-4">
                         <div>
@@ -47,7 +51,7 @@
                             </svg>
                             <div>
                                 <h3 class="font-semibold">Address</h3>
-                                <p class="text-gray-600">Brampton, Ontario, Canada</p>
+                                <p class="text-gray-600">The Queen’s Walk, Bishop’s, London SE1 7PB, United Kingdom.</p>
                             </div>
                         </div>
                         <div class="flex items-start gap-4">
@@ -56,7 +60,7 @@
                             </svg>
                             <div>
                                 <h3 class="font-semibold">Phone</h3>
-                                <p class="text-gray-600">905-744-0013</p>
+                                <p class="text-gray-600">+1 (647) 948 9400</p>
                             </div>
                         </div>
                         <div class="flex items-start gap-4">
@@ -65,7 +69,7 @@
                             </svg>
                             <div>
                                 <h3 class="font-semibold">Email</h3>
-                                <p class="text-gray-600">info@hawkprints.ca</p>
+                                <p class="text-gray-600">fiveriversprint@gmail.com</p>
                             </div>
                         </div>
                     </div>

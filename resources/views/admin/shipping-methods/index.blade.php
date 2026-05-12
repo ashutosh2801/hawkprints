@@ -1,6 +1,6 @@
 @extends('admin.layout')
 
-@section('page-title', 'Shipping Methods - Hawk Prints')
+@section('page-title', 'Shipping Methods - Five Rivers Print')
 
 @section('content')
 <div class="max-w-6xl mx-auto">

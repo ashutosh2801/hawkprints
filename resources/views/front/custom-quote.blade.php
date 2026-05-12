@@ -1,6 +1,7 @@
 @extends('layouts.app')
 
-@section('title', 'Custom Quote - Hawk Prints')
+@section('title', 'Custom Quote - Five Rivers Print')
+@section('meta_description', 'Need a custom printing solution? Request a personalized quote from Five Rivers Print for your unique printing requirements.')
 
 @section('content')
 <div class="bg-gray-100 py-16">

@@ -1,6 +1,7 @@
 @extends('layouts.app')
 
-@section('title', 'Terms & Conditions - Hawk Prints')
+@section('title', 'Terms & Conditions - Five Rivers Print')
+@section('meta_description', 'Review the terms and conditions for using Five Rivers Print services, including ordering, payment, shipping, and return policies.')
 
 @section('content')
 <div class="bg-gray-100 py-16">
@@ -10,7 +11,7 @@
             <p class="text-gray-600 mb-6">Last updated: {{ date('F d, Y') }}</p>
 
             <div class="prose prose-lg max-w-none text-gray-700">
-                <p class="mb-6">Please read these Terms & Conditions carefully before using our website and services. By accessing or using hawkprints.ca, you agree to be bound by these terms.</p>
+                <p class="mb-6">Please read these Terms & Conditions carefully before using our website and services. By accessing or using fiveriversprint.ca, you agree to be bound by these terms.</p>
 
                 <h2 class="text-2xl font-bold mt-8 mb-4">1. General</h2>
                 <p class="mb-4">These Terms & Conditions govern your use of our website and the purchase of our printing products and services. We reserve the right to modify these terms at any time. Continued use of our services constitutes acceptance of any changes.</p>
@@ -57,14 +58,14 @@
                     <li>Refunds may be issued if the product is defective or does not match the approved proof</li>
                     <li>Reprints or refunds will not be provided for errors in customer-supplied artwork</li>
                     <li>Return requests must be submitted within 7 days of delivery</li>
-                    <li>Contact us at info@hawkprints.ca to initiate a return or refund</li>
+                    <li>Contact us at info@fiveriversprint.ca to initiate a return or refund</li>
                 </ul>
 
                 <h2 class="text-2xl font-bold mt-8 mb-4">7. Intellectual Property</h2>
-                <p class="mb-4">All content on this website, including but not limited to text, graphics, logos, and images, is the property of Hawk Prints and is protected by intellectual property laws. You may not reproduce or distribute any content without our prior written consent.</p>
+                <p class="mb-4">All content on this website, including but not limited to text, graphics, logos, and images, is the property of Five Rivers Print and is protected by intellectual property laws. You may not reproduce or distribute any content without our prior written consent.</p>
 
                 <h2 class="text-2xl font-bold mt-8 mb-4">8. Limitation of Liability</h2>
-                <p class="mb-4">Hawk Prints shall not be liable for any indirect, incidental, special, or consequential damages arising from the use of our website or products. Our total liability shall not exceed the amount paid for the specific product or service in question.</p>
+                <p class="mb-4">Five Rivers Print shall not be liable for any indirect, incidental, special, or consequential damages arising from the use of our website or products. Our total liability shall not exceed the amount paid for the specific product or service in question.</p>
 
                 <h2 class="text-2xl font-bold mt-8 mb-4">9. User Accounts</h2>
                 <ul class="list-disc pl-6 mb-4 space-y-1">
@@ -80,7 +81,7 @@
                 <h2 class="text-2xl font-bold mt-8 mb-4">11. Contact Information</h2>
                 <p class="mb-4">For questions about these Terms & Conditions, please contact us:</p>
                 <ul class="list-disc pl-6 mb-4 space-y-1">
-                    <li><strong>Email:</strong> info@hawkprints.ca</li>
+                    <li><strong>Email:</strong> info@fiveriversprint.ca</li>
                     <li><strong>Phone:</strong> 905-744-0013</li>
                     <li><strong>Address:</strong> Brampton, Ontario, Canada</li>
                 </ul>

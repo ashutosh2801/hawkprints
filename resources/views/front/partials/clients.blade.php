@@ -8,16 +8,16 @@
             <div class="flex animate-scroll">
                 @php
                 $clients = [
-                    'Artboard 4' => 'https://hawkprints.ca/wp-content/uploads/2023/03/Artboard-4.png',
-                    'logo-stoke' => 'https://hawkprints.ca/wp-content/uploads/2023/03/logo-stoke-300x200.png',
-                    'DOS' => 'https://hawkprints.ca/wp-content/uploads/2023/03/DOS.png',
-                    'Fedex' => 'https://hawkprints.ca/wp-content/uploads/2023/03/Fedex.png',
-                    'MS' => 'https://hawkprints.ca/wp-content/uploads/2023/03/MS.png',
-                    'Remax' => 'https://hawkprints.ca/wp-content/uploads/2023/03/Remax.png',
-                    'Royalle' => 'https://hawkprints.ca/wp-content/uploads/2023/03/Royalle.png',
-                    'UPS' => 'https://hawkprints.ca/wp-content/uploads/2023/03/UPS.png',
-                    'Xerox' => 'https://hawkprints.ca/wp-content/uploads/2023/03/Xerox.png',
-                    'Creekside' => 'https://hawkprints.ca/wp-content/uploads/2023/03/Creekside.png',
+                    'Artboard 4' => 'https://fiveriversprint.ca/wp-content/uploads/2023/03/Artboard-4.png',
+                    'logo-stoke' => 'https://fiveriversprint.ca/wp-content/uploads/2023/03/logo-stoke-300x200.png',
+                    'DOS' => 'https://fiveriversprint.ca/wp-content/uploads/2023/03/DOS.png',
+                    'Fedex' => 'https://fiveriversprint.ca/wp-content/uploads/2023/03/Fedex.png',
+                    'MS' => 'https://fiveriversprint.ca/wp-content/uploads/2023/03/MS.png',
+                    'Remax' => 'https://fiveriversprint.ca/wp-content/uploads/2023/03/Remax.png',
+                    'Royalle' => 'https://fiveriversprint.ca/wp-content/uploads/2023/03/Royalle.png',
+                    'UPS' => 'https://fiveriversprint.ca/wp-content/uploads/2023/03/UPS.png',
+                    'Xerox' => 'https://fiveriversprint.ca/wp-content/uploads/2023/03/Xerox.png',
+                    'Creekside' => 'https://fiveriversprint.ca/wp-content/uploads/2023/03/Creekside.png',
                 ];
                 @endphp
 

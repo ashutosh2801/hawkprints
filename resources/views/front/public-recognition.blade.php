@@ -1,6 +1,7 @@
 @extends('layouts.app')
 
-@section('title', 'Public Recognition - Hawk Prints')
+@section('title', 'Public Recognition - Five Rivers Print')
+@section('meta_description', 'Discover awards, certifications, and public recognition received by Five Rivers Print for quality printing services.')
 
 @section('content')
 <div class="bg-gray-100 py-16">
@@ -13,12 +14,12 @@
 
             <div class="prose prose-lg max-w-none text-gray-700">
                 <p class="mb-6">
-                    At Hawk Prints, we take pride in the recognition we have received from our clients, industry peers, and the community. Our commitment to quality and customer satisfaction has been acknowledged through various channels.
+                    At Five Rivers Print, we take pride in the recognition we have received from our clients, industry peers, and the community. Our commitment to quality and customer satisfaction has been acknowledged through various channels.
                 </p>
 
                 <h2 class="text-2xl font-bold mt-8 mb-4">Industry Recognition</h2>
                 <p class="mb-4">
-                    Over the years, Hawk Prints has built a reputation for excellence in the printing industry. Our dedication to using the latest technology and maintaining high production standards has earned us respect among our peers and clients alike.
+                    Over the years, Five Rivers Print has built a reputation for excellence in the printing industry. Our dedication to using the latest technology and maintaining high production standards has earned us respect among our peers and clients alike.
                 </p>
 
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6 my-8">
@@ -44,24 +45,24 @@
 
                 <h2 class="text-2xl font-bold mt-8 mb-4">Community Involvement</h2>
                 <p class="mb-4">
-                    We believe in giving back to the community that has supported us. Hawk Prints actively participates in local community events and supports small businesses in the Greater Toronto Area.
+                    We believe in giving back to the community that has supported us. Five Rivers Print actively participates in local community events and supports small businesses in the Greater Toronto Area.
                 </p>
 
                 <h2 class="text-2xl font-bold mt-8 mb-4">Client Testimonials</h2>
                 <p class="mb-6">
-                    Don't just take our word for it. Here is what our clients have to say about working with Hawk Prints:
+                    Don't just take our word for it. Here is what our clients have to say about working with Five Rivers Print:
                 </p>
 
                 <div class="space-y-6 my-8">
                     <div class="bg-blue-50 rounded-lg p-6 border-l-4 border-blue-700">
                         <p class="italic text-gray-700 mb-3">
-                            "Hawk Prints has been our go-to printer for all our business cards and marketing materials. The quality is always exceptional, and turnaround time is impressive."
+                            "Five Rivers Print has been our go-to printer for all our business cards and marketing materials. The quality is always exceptional, and turnaround time is impressive."
                         </p>
                         <p class="font-semibold text-sm text-gray-600">— Business Owner, Brampton</p>
                     </div>
                     <div class="bg-blue-50 rounded-lg p-6 border-l-4 border-blue-700">
                         <p class="italic text-gray-700 mb-3">
-                            "We needed custom banners for our event on short notice, and Hawk Prints delivered beyond our expectations. Highly recommend!"
+                            "We needed custom banners for our event on short notice, and Five Rivers Print delivered beyond our expectations. Highly recommend!"
                         </p>
                         <p class="font-semibold text-sm text-gray-600">— Event Organizer, Toronto</p>
                     </div>
@@ -80,7 +81,7 @@
                 <div class="bg-blue-50 border border-blue-200 rounded-lg p-6 flex flex-col md:flex-row items-center justify-between gap-4">
                     <div>
                         <p class="font-semibold text-blue-900">Contact us today</p>
-                        <p class="text-sm text-blue-700">info@hawkprints.ca | 905-744-0013</p>
+                        <p class="text-sm text-blue-700">info@fiveriversprint.ca | 905-744-0013</p>
                     </div>
                     <a href="/contact" class="px-6 py-2 bg-blue-700 hover:bg-blue-800 text-white rounded-lg font-semibold transition">
                         Contact Us

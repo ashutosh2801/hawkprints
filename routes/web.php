@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Contact\ContactController;
 use App\Http\Controllers\Front\HomeController;
 use App\Http\Controllers\Shop\ShopController;
 use App\Http\Controllers\Cart\CartController;
@@ -23,9 +24,14 @@ use App\Http\Controllers\Admin\ShippingMethodController;
 use App\Http\Controllers\Customer\AuthController as CustomerAuthController;
 use App\Http\Controllers\Customer\DashboardController as CustomerDashboardController;
 use App\Http\Controllers\Newsletter\NewsletterController;
+use App\Http\Controllers\Admin\ContactInquiryController;
 use App\Http\Controllers\Admin\NewsletterSubscriberController;
 use App\Http\Controllers\Admin\HomePageController;
+use App\Http\Controllers\Admin\NotificationController;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\SoftwareDevelopment\SoftwareDevelopmentController as SoftwareDevelopmentController;
+use App\Http\Controllers\Admin\SoftwareDevelopmentController as AdminSoftwareDevelopmentController;
+use App\Http\Controllers\SitemapController;
 
 Route::get('/', function () {
     return view('welcome');
@@ -115,6 +121,11 @@ Route::prefix('admin')->name('admin.')->group(function () {
         Route::post('newsletter/bulk-delete', [NewsletterSubscriberController::class, 'bulkDelete'])->name('newsletter.bulk-delete');
         Route::get('newsletter/export', [NewsletterSubscriberController::class, 'export'])->name('newsletter.export');
         
+        Route::get('contact-inquiries', [ContactInquiryController::class, 'index'])->name('contact-inquiries');
+        Route::get('contact-inquiries/{contactInquiry}', [ContactInquiryController::class, 'show'])->name('contact-inquiries.show');
+        Route::post('contact-inquiries/{contactInquiry}/reply', [ContactInquiryController::class, 'reply'])->name('contact-inquiries.reply');
+        Route::delete('contact-inquiries/{contactInquiry}', [ContactInquiryController::class, 'destroy'])->name('contact-inquiries.destroy');
+        
         Route::get('email-templates', [EmailTemplateController::class, 'index'])->name('email-templates');
         Route::get('email-templates/create', [EmailTemplateController::class, 'create'])->name('email-templates.create');
         Route::post('email-templates', [EmailTemplateController::class, 'store'])->name('email-templates.store');
@@ -135,6 +146,22 @@ Route::prefix('admin')->name('admin.')->group(function () {
         Route::post('home-page/{id}/toggle', [HomePageController::class, 'toggle'])->name('home-page.toggle');
         Route::post('home-page/add/{key}', [HomePageController::class, 'add'])->name('home-page.add');
         Route::delete('home-page/{id}', [HomePageController::class, 'remove'])->name('home-page.remove');
+
+        Route::post('generate-sitemap', [\App\Http\Controllers\SitemapController::class, 'generate'])->name('sitemap.generate');
+
+        // Notifications
+        Route::get('notifications', [NotificationController::class, 'index'])->name('notifications');
+        Route::get('notifications/unread', [NotificationController::class, 'unread'])->name('notifications.unread');
+        Route::post('notifications/{id}/read', [NotificationController::class, 'markRead'])->name('notifications.read');
+        Route::post('notifications/read-all', [NotificationController::class, 'markAllRead'])->name('notifications.read-all');
+        Route::delete('notifications/{id}', [NotificationController::class, 'destroy'])->name('notifications.destroy');
+
+        // Software Development
+        Route::get('software-development', [AdminSoftwareDevelopmentController::class, 'index'])->name('software-development');
+        Route::get('software-development/{softwareDevelopmentRequest}', [AdminSoftwareDevelopmentController::class, 'show'])->name('software-development.show');
+        Route::post('software-development/{softwareDevelopmentRequest}/status', [AdminSoftwareDevelopmentController::class, 'updateStatus'])->name('software-development.status');
+        Route::post('software-development/{softwareDevelopmentRequest}/notes', [AdminSoftwareDevelopmentController::class, 'updateNotes'])->name('software-development.notes');
+        Route::delete('software-development/{softwareDevelopmentRequest}', [AdminSoftwareDevelopmentController::class, 'destroy'])->name('software-development.destroy');
     });
 });
 
@@ -162,6 +189,7 @@ Route::middleware(\App\Http\Middleware\CustomerAuth::class)->group(function () {
 
 Route::get('/about', [HomeController::class, 'about'])->name('about');
 Route::get('/contact', [HomeController::class, 'contact'])->name('contact');
+Route::post('/contact', [ContactController::class, 'submit'])->name('contact.submit');
 
 Route::get('/our-company', function () {
     return view('front.our-company');
@@ -187,6 +215,13 @@ Route::get('/shop', [ShopController::class, 'index'])->name('shop');
 Route::get('/shop/category/{slug}', [ShopController::class, 'category'])->name('shop.category');
 Route::get('/shop/product/{slug}', [ShopController::class, 'product'])->name('shop.product');
 
+Route::get('/robots.txt', function () {
+    $sitemapUrl = url('/sitemap.xml');
+    return response()->view('robots', compact('sitemapUrl'))->header('Content-Type', 'text/plain');
+})->name('robots');
+
+Route::get('/sitemap.xml', [SitemapController::class, 'index'])->name('sitemap');
+
 Route::prefix('cart')->name('cart.')->group(function () {
     Route::get('/', [CartController::class, 'index'])->name('index');
     Route::post('/add/{slug}', [CartController::class, 'add'])->name('add');
@@ -205,6 +240,9 @@ Route::prefix('checkout')->name('checkout.')->group(function () {
     Route::get('/success/{orderNumber}', [CheckoutController::class, 'success'])->name('success');
     Route::post('/create-payment-intent', [CheckoutController::class, 'createPaymentIntent'])->name('create-payment-intent');
 });
+
+Route::get('/software-development', [SoftwareDevelopmentController::class, 'index'])->name('software.development');
+Route::post('/software-development', [SoftwareDevelopmentController::class, 'submit'])->name('software.development.submit');
 
 Route::get('/custom-quote', function () {
     return view('front.custom-quote');

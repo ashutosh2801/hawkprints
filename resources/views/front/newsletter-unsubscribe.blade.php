@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title', 'Newsletter Unsubscribe - Hawk Prints')
+@section('title', 'Newsletter Unsubscribe - Five Rivers Print')
 
 @section('content')
 <div class="bg-gray-100 py-16">

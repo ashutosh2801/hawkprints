@@ -102,10 +102,10 @@ class DatabaseSeeder extends Seeder
         ]);
 
         User::updateOrCreate(
-            ['email' => 'admin@hawkprints.ca'],
+            ['email' => 'admin@fiveriversprint.ca'],
             [
                 'name' => 'Admin',
-                'email' => 'admin@hawkprints.ca',
+                'email' => 'admin@fiveriversprint.ca',
                 'password' => Hash::make('admin123'),
                 'is_admin' => true,
             ]

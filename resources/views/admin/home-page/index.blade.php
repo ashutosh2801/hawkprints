@@ -242,7 +242,7 @@ function openEditModal(id, key) {
         `;
     } else if (key === 'about') {
         title.textContent = 'Configure About Section';
-        const heading = getSetting('heading', id, 'Why Choose Hawk Prints?');
+        const heading = getSetting('heading', id, 'Why Choose Five Rivers Print?');
         const text = getSetting('text', id, '');
         html = `
             <div class="space-y-4">

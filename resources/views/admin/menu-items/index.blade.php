@@ -27,6 +27,17 @@
                     </select>
                 </div>
                 <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Location</label>
+                    <select name="location" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500">
+                        <option value="">-- Select --</option>
+                        <option value="header">Header Navigation</option>
+                        <option value="footer">Footer</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                <div>
                     <label class="block text-sm font-medium text-gray-700 mb-1">Parent Menu Item</label>
                     <select name="parent_id" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500">
                         <option value="">-- None (Top Level) --</option>
@@ -103,6 +114,7 @@
                     <tr>
                         <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Label</th>
                         <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Type</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Location</th>
                         <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">URL</th>
                         <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Order</th>
                         <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Status</th>
@@ -157,7 +169,7 @@ function renderMenuItems() {
     var children = allItems.filter(function(x) { return x.parent_id; });
     
     if (allItems.length === 0) {
-        tbody.innerHTML = '<tr><td colspan="6" class="px-6 py-4 text-center text-gray-500">No menu items found. Add one above.</td></tr>';
+        tbody.innerHTML = '<tr><td colspan="7" class="px-6 py-4 text-center text-gray-500">No menu items found. Add one above.</td></tr>';
         return;
     }
     
@@ -172,9 +184,12 @@ function renderMenuItems() {
         var displayName = getDisplayName(parent);
         var typeLabel = parent.type === 'category' ? 'Category' : (parent.type === 'product' ? 'Product' : 'Custom');
         
+        var locationLabel = parent.location === 'header' ? '<span class="text-blue-600">Header</span>' : (parent.location === 'footer' ? '<span class="text-green-600">Footer</span>' : '<span class="text-gray-400">—</span>');
+        
         html += '<tr class="bg-blue-50">' +
             '<td class="px-6 py-3 font-bold text-blue-700">' + displayName + '</td>' +
             '<td class="px-6 py-3 text-gray-500">' + typeLabel + '</td>' +
+            '<td class="px-6 py-3">' + locationLabel + '</td>' +
             '<td class="px-6 py-3 text-gray-500 text-sm">' + (parent.slug || '-') + '</td>' +
             '<td class="px-6 py-3">' + parent.sort_order + '</td>' +
             '<td class="px-6 py-3">' + status + '</td>' +
@@ -207,9 +222,12 @@ function renderMenuItems() {
             var cdisplayName = getDisplayName(child);
             var ctypeLabel = child.type === 'category' ? 'Category' : (child.type === 'product' ? 'Product' : 'Custom');
             
+            var clocationLabel = child.location === 'header' ? '<span class="text-blue-600">Header</span>' : (child.location === 'footer' ? '<span class="text-green-600">Footer</span>' : '<span class="text-gray-400">—</span>');
+            
             html += '<tr>' +
                 '<td class="px-6 py-2 pl-10 text-gray-600">↳ ' + cdisplayName + '</td>' +
                 '<td class="px-6 py-2 text-gray-500">' + ctypeLabel + '</td>' +
+                '<td class="px-6 py-2">' + clocationLabel + '</td>' +
                 '<td class="px-6 py-2 text-gray-500 text-sm">' + (child.slug || '-') + '</td>' +
                 '<td class="px-6 py-2">' + child.sort_order + '</td>' +
                 '<td class="px-6 py-2">' + cstatus + '</td>' +
@@ -234,7 +252,7 @@ function renderMenuItems() {
         });
         
         if (parentChildren.length === 0) {
-            html += '<tr><td colspan="6" class="px-6 py-2 pl-10 text-gray-400 text-sm italic">No sub-items</td></tr>';
+            html += '<tr><td colspan="7" class="px-6 py-2 pl-10 text-gray-400 text-sm italic">No sub-items</td></tr>';
         }
     });
     

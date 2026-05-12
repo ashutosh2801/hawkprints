@@ -85,6 +85,23 @@
                             <label class="block text-sm font-medium text-gray-700 mb-1">Artwork Instructions</label>
                             <textarea name="artwork_instructions" class="w-full px-4 py-2 border border-gray-300 rounded-lg wysiwyg" placeholder="Instructions for customers about artwork requirements">{{ $product->artwork_instructions ?? '' }}</textarea>
                         </div>
+
+                        <div class="col-span-2">
+                            <hr class="my-4">
+                            <h3 class="text-lg font-medium mb-4">SEO Settings</h3>
+                        </div>
+
+                        <div class="col-span-2">
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Meta Title</label>
+                            <input type="text" name="meta_title" value="{{ $product->meta_title }}" class="w-full px-4 py-2 border border-gray-300 rounded-lg" placeholder="{{ $product->name }} - {{ \App\Models\Setting::get('company_name', 'Five Rivers Print') }}">
+                            <small class="text-gray-500">Recommended: 50-60 characters. Leave blank to use product name.</small>
+                        </div>
+
+                        <div class="col-span-2">
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Meta Description</label>
+                            <textarea name="meta_description" rows="3" maxlength="160" class="w-full px-4 py-2 border border-gray-300 rounded-lg" placeholder="Brief description of this product...">{{ $product->meta_description }}</textarea>
+                            <small class="text-gray-500">Recommended: 150-160 characters</small>
+                        </div>
                     </div>
                     
                     <div class="mt-6">
@@ -348,6 +365,28 @@
 <script>
 const allOptionTypes = @json($pricingOptionTypes->pluck('name')->toArray());
 
+function addChoiceRow(optionId) {
+    const containerId = optionId === 'new' ? 'new-choices-container' : 'choices-container-' + optionId;
+    const container = document.getElementById(containerId);
+    if (!container) return;
+    const template = container.querySelector('.choice-row');
+    if (!template) return;
+    const clone = template.cloneNode(true);
+    clone.querySelectorAll('input').forEach(input => {
+        if (input.type !== 'hidden') input.value = '';
+    });
+    container.appendChild(clone);
+}
+
+function removeChoiceRow(btn) {
+    const row = btn.closest('.choice-row');
+    if (row) {
+        const container = row.closest('[id$="choices-container"]');
+        if (container && container.querySelectorAll('.choice-row').length <= 1) return;
+        row.remove();
+    }
+}
+
 function switchTab(tab) {
     const url = new URL(window.location.href);
     url.searchParams.set('tab', tab);
@@ -515,6 +554,30 @@ function attachPriceOverrideListeners(row) {
             }
         });
     });
+}
+
+function setPrimaryImage(imageId) {
+    fetch('/admin/media-library/' + imageId + '/primary', {
+        method: 'POST',
+        headers: {
+            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.content || '',
+            'Content-Type': 'application/json',
+        },
+    })
+    .then(res => res.json())
+    .then(data => {
+        if (data.success) location.reload();
+    });
+}
+
+function removeProductImage(imageId) {
+    if (!confirm('Remove this image from the product?')) return;
+    fetch('/admin/product-images/' + imageId, {
+        method: 'DELETE',
+        headers: { 'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.content || '' },
+    })
+    .then(() => location.reload())
+    .catch(() => location.reload());
 }
 
 document.querySelectorAll('#panel-pricing form').forEach(form => {

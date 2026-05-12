@@ -1,5 +1,8 @@
 @extends('layouts.app')
 
+@section('title', 'Login - Five Rivers Print')
+@section('robots', 'noindex, nofollow')
+
 @section('content')
 <div class="min-h-screen bg-gray-50 py-12">
     <div class="container mx-auto px-4">

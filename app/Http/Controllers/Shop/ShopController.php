@@ -59,10 +59,39 @@ class ShopController extends Controller
         return view('shop.index', compact('products', 'categories'));
     }
 
-    public function category($slug)
+    public function category($slug, Request $request)
     {
         $category = Category::where('slug', $slug)->firstOrFail();
-        $products = $category->products()->where('is_active', true)->paginate(12);
+
+        $query = $category->products()->where('is_active', true);
+
+        if ($request->has('min_price') && $request->min_price) {
+            $query->where('base_price', '>=', $request->min_price);
+        }
+
+        if ($request->has('max_price') && $request->max_price) {
+            $query->where('base_price', '<=', $request->max_price);
+        }
+
+        if ($request->has('in_stock') && $request->in_stock) {
+            $query->where('in_stock', true);
+        }
+
+        switch ($request->sort) {
+            case 'price_low':
+                $query->orderBy('base_price', 'asc');
+                break;
+            case 'price_high':
+                $query->orderBy('base_price', 'desc');
+                break;
+            case 'name':
+                $query->orderBy('name', 'asc');
+                break;
+            default:
+                $query->orderBy('created_at', 'desc');
+        }
+
+        $products = $query->paginate(12);
 
         return view('shop.category', compact('category', 'products'));
     }

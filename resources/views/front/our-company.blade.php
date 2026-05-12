@@ -1,6 +1,7 @@
 @extends('layouts.app')
 
-@section('title', 'Our Company - Hawk Prints')
+@section('title', 'Our Company - Five Rivers Print')
+@section('meta_description', 'Discover what makes Five Rivers Print your trusted printing partner. Learn about our values, team, and commitment to quality.')
 
 @section('content')
 <div class="bg-gray-100 py-16">
@@ -15,7 +16,7 @@
                 <div class="p-8 lg:p-12">
                     <div class="prose prose-lg max-w-none text-gray-700">
                         <p class="text-lg leading-relaxed mb-6">
-                            Hawk Prints has been helping business owners, professionals, entrepreneurs, and individuals create custom designs and professional marketing materials since 2015. Based in Brampton, Ontario, we are proud to serve clients across Canada with high-quality printing products and services.
+                            Five Rivers Print has been helping business owners, professionals, entrepreneurs, and individuals create custom designs and professional marketing materials since 2015. Based in Brampton, Ontario, we are proud to serve clients across Canada with high-quality printing products and services.
                         </p>
 
                         <p class="text-lg leading-relaxed mb-6">
@@ -105,7 +106,7 @@
                         <div class="bg-blue-50 border border-blue-200 rounded-lg p-6 flex flex-col md:flex-row items-center justify-between gap-4">
                             <div>
                                 <p class="font-semibold text-blue-900">Contact us today</p>
-                                <p class="text-sm text-blue-700">info@hawkprints.ca | 905-744-0013</p>
+                                <p class="text-sm text-blue-700">info@fiveriversprint.ca | 905-744-0013</p>
                             </div>
                             <a href="/contact" class="px-6 py-2 bg-blue-700 hover:bg-blue-800 text-white rounded-lg font-semibold transition">
                                 Contact Us

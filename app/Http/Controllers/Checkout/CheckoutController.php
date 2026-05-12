@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Checkout;
 
 use App\Http\Controllers\Controller;
+use App\Models\AdminNotification;
 use App\Models\Order;
 use App\Models\OrderItem;
 use App\Models\User;
@@ -34,6 +35,8 @@ class CheckoutController extends Controller
 
         $cart = $this->cartService->getCart();
         $subtotal = $this->cartService->getSubtotal();
+        $taxRate = floatval(Setting::get('tax_rate', '13'));
+        $taxRateDisplay = $taxRate > 1 ? $taxRate : $taxRate * 100;
         $tax = $this->cartService->getTax();
         $total = $this->cartService->getTotal();
 
@@ -44,12 +47,12 @@ class CheckoutController extends Controller
 
         $shippingCost = $this->cartService->getShippingCost();
 
-        return view('checkout.index', compact('cart', 'subtotal', 'tax', 'total', 'shippingCost', 'stripeEnabled', 'stripePublishableKey', 'codEnabled'));
+        return view('checkout.index', compact('cart', 'subtotal', 'tax', 'taxRateDisplay', 'total', 'shippingCost', 'stripeEnabled', 'stripePublishableKey', 'codEnabled'));
     }
 
     public function process(Request $request)
     {
-        $request->validate([
+        $rules = [
             'customer_name' => 'required|string|max:255',
             'customer_email' => 'required|email|max:255',
             'customer_phone' => 'nullable|string|max:20',
@@ -66,9 +69,14 @@ class CheckoutController extends Controller
             'same_address' => 'nullable',
             'notes' => 'nullable|string',
             'create_account' => 'nullable',
-            'password' => 'nullable|string|min:8|confirmed',
             'payment_method' => 'nullable|string|in:cod,stripe',
-        ]);
+        ];
+
+        if ($request->boolean('create_account')) {
+            $rules['password'] = 'required|string|min:8|confirmed';
+        }
+
+        $request->validate($rules);
 
         if (!empty($request->create_account) && !empty($request->password)) {
             if (User::where('email', $request->customer_email)->exists()) {
@@ -124,8 +132,8 @@ class CheckoutController extends Controller
                 return back()->withErrors(['payment_intent_id' => 'Payment has not been completed. Please complete the payment before submitting.'])->withInput();
             }
 
-            $expectedAmount = round($total * 100);
-            if ($paymentIntent['amount'] != $expectedAmount) {
+            $expectedAmount = round($total, 2);
+            if (round($paymentIntent['amount'], 2) != $expectedAmount) {
                 return back()->withErrors(['payment_intent_id' => 'Payment amount does not match order total.'])->withInput();
             }
         }
@@ -176,6 +184,12 @@ class CheckoutController extends Controller
                     ]);
                     $userId = $user->id;
                     Auth::login($user);
+
+                    AdminNotification::createNotification('signup', [
+                        'name' => $user->name,
+                        'email' => $user->email,
+                        'source' => 'checkout',
+                    ]);
                 }
             }
 
@@ -213,6 +227,14 @@ class CheckoutController extends Controller
             }
 
             DB::commit();
+
+            AdminNotification::createNotification('order', [
+                'order_id' => $order->id,
+                'order_number' => $order->order_number,
+                'customer_name' => $order->customer_name,
+                'customer_email' => $order->customer_email,
+                'total' => $order->total,
+            ]);
 
             $emailService = new EmailService();
             $emailService->sendOrderEmails($order);

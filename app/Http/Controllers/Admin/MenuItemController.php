@@ -36,12 +36,14 @@ class MenuItemController extends Controller
             'parent_id' => 'nullable|exists:menu_items,id',
             'sort_order' => 'nullable|integer',
             'is_active' => 'nullable|boolean',
+            'location' => 'nullable|in:header,footer',
         ]);
 
         $type = $validated['type'] ?? 'custom';
         $isActive = $request->has('is_active') ? true : false;
         $sortOrder = $validated['sort_order'] ?? 0;
         $parentId = $validated['parent_id'] ?? null;
+        $location = $validated['location'] ?? null;
 
         if ($type === 'category' && !empty($validated['reference_ids'])) {
             foreach ($validated['reference_ids'] as $refId) {
@@ -55,6 +57,7 @@ class MenuItemController extends Controller
                         'parent_id' => $parentId,
                         'sort_order' => $sortOrder,
                         'is_active' => $isActive,
+                        'location' => $location,
                     ]);
                     $sortOrder++;
                 }
@@ -71,6 +74,7 @@ class MenuItemController extends Controller
                         'parent_id' => $parentId,
                         'sort_order' => $sortOrder,
                         'is_active' => $isActive,
+                        'location' => $location,
                     ]);
                     $sortOrder++;
                 }
@@ -83,6 +87,7 @@ class MenuItemController extends Controller
                 'parent_id' => $parentId,
                 'sort_order' => $sortOrder,
                 'is_active' => $isActive,
+                'location' => $location,
             ]);
         }
 
@@ -99,6 +104,7 @@ class MenuItemController extends Controller
             'parent_id' => 'nullable|exists:menu_items,id',
             'sort_order' => 'nullable|integer',
             'is_active' => 'nullable|boolean',
+            'location' => 'nullable|in:header,footer',
         ]);
 
         $validated['is_active'] = $request->has('is_active') ? true : false;

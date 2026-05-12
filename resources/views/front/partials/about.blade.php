@@ -6,7 +6,7 @@
     <div class="container mx-auto px-4 relative">
         <div class="text-center mb-16 max-w-3xl mx-auto">
             <span class="inline-block px-4 py-1.5 bg-white/10 text-white text-sm font-medium rounded-full mb-4 border border-white/20">Why Choose Us</span>
-            <h2 class="text-3xl md:text-4xl font-bold mb-6">{{ $heading ?? 'Hawk Prints: Your printing partner' }}</h2>
+            <h2 class="text-3xl md:text-4xl font-bold mb-6">{{ $heading ?? 'Five Rivers Print: Your printing partner' }}</h2>
             @if(!empty($text))
             <p class="text-lg text-gray-300">{{ $text }}</p>
             @else

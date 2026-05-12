@@ -1,6 +1,7 @@
 @extends('layouts.app')
 
-@section('title', 'Order Confirmed - Hawk Prints')
+@section('title', 'Order Confirmed - Five Rivers Print')
+@section('robots', 'noindex, nofollow')
 
 @section('content')
 <div class="bg-gray-100 py-16">

@@ -54,8 +54,8 @@ class EmailService
             'order_date' => $orderDate,
         ];
 
-        $companyName = Setting::get('company_name', 'Hawk Prints');
-        $companyEmail = Setting::get('company_email', 'info@hawkprints.ca');
+        $companyName = Setting::get('company_name', 'Five Rivers Print');
+        $companyEmail = Setting::get('company_email', 'info@fiveriversprint.ca');
 
         $customerTemplate = EmailTemplate::where('slug', 'order_confirmation')->where('is_active', true)->first();
         if ($customerTemplate && $customerTemplate->send_to_customer) {

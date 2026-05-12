@@ -1,6 +1,7 @@
 @extends('layouts.app')
 
-@section('title', 'Privacy Policy - Hawk Prints')
+@section('title', 'Privacy Policy - Five Rivers Print')
+@section('meta_description', 'Read the Five Rivers Print privacy policy to understand how we collect, use, and protect your personal information.')
 
 @section('content')
 <div class="bg-gray-100 py-16">
@@ -10,7 +11,7 @@
             <p class="text-gray-600 mb-6">Last updated: {{ date('F d, Y') }}</p>
 
             <div class="prose prose-lg max-w-none text-gray-700">
-                <p class="mb-6">Hawk Prints ("we," "our," or "us") is committed to protecting your privacy. This Privacy Policy explains how we collect, use, disclose, and safeguard your information when you visit our website or place an order.</p>
+                <p class="mb-6">Five Rivers Print ("we," "our," or "us") is committed to protecting your privacy. This Privacy Policy explains how we collect, use, disclose, and safeguard your information when you visit our website or place an order.</p>
 
                 <h2 class="text-2xl font-bold mt-8 mb-4">1. Information We Collect</h2>
                 <h3 class="text-xl font-semibold mt-6 mb-2">Personal Information</h3>
@@ -84,7 +85,7 @@
                 <h2 class="text-2xl font-bold mt-8 mb-4">11. Contact Us</h2>
                 <p class="mb-4">If you have questions or concerns about this Privacy Policy, please contact us:</p>
                 <ul class="list-disc pl-6 mb-4 space-y-1">
-                    <li><strong>Email:</strong> info@hawkprints.ca</li>
+                    <li><strong>Email:</strong> info@fiveriversprint.ca</li>
                     <li><strong>Phone:</strong> 905-744-0013</li>
                     <li><strong>Address:</strong> Brampton, Ontario, Canada</li>
                 </ul>

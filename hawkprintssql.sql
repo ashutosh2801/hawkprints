@@ -18,7 +18,7 @@ SET time_zone = "+00:00";
 /*!40101 SET NAMES utf8mb4 */;
 
 --
--- Database: `hawkprints`
+-- Database: `fiveriversprint`
 --
 
 -- --------------------------------------------------------
@@ -672,8 +672,8 @@ INSERT INTO `settings` (`id`, `key`, `value`) VALUES
 (2, 'stripe_key', 'pk_test_51RmXjd08OzR80B9BqS7hDszi8BJhxtiTU5NDvEBpNAFQUPGjrgUZ6VUz2F7QXu83G6t9mD2SShDG8Fo5Dfpwzu3p00B5k6Zm9J'),
 (3, 'stripe_secret', ''),
 (4, 'stripe_webhook_secret', NULL),
-(5, 'company_name', 'Hawk Prints'),
-(6, 'company_email', 'info@hawkprints.ca'),
+(5, 'company_name', 'Five Rivers Print'),
+(6, 'company_email', 'info@fiveriversprint.ca'),
 (7, 'company_phone', '905-744-0013'),
 (8, 'company_address', NULL),
 (9, 'tax_rate', '13'),
@@ -797,7 +797,7 @@ CREATE TABLE `users` (
 --
 
 INSERT INTO `users` (`id`, `name`, `email`, `email_verified_at`, `password`, `is_admin`, `remember_token`, `created_at`, `updated_at`) VALUES
-(1, 'Admin', 'admin@hawkprints.ca', NULL, '$2y$12$2AoOIQCNdlUns25LMR64S.QodRORkcjhNVubEgPfXSvoXDyrpDlE6', 1, NULL, '2026-04-22 05:26:02', '2026-05-02 15:29:48');
+(1, 'Admin', 'admin@fiveriversprint.ca', NULL, '$2y$12$2AoOIQCNdlUns25LMR64S.QodRORkcjhNVubEgPfXSvoXDyrpDlE6', 1, NULL, '2026-04-22 05:26:02', '2026-05-02 15:29:48');
 
 -- --------------------------------------------------------
 
@@ -886,7 +886,7 @@ INSERT INTO `wp_options` (`option_id`, `option_name`, `option_value`, `autoload`
 (1, 'cron', 'a:10:{i:1776593637;a:1:{s:16:\"wp_version_check\";a:1:{s:32:\"40cd750bba9870f18aada2478b24840a\";a:3:{s:8:\"schedule\";s:10:\"twicedaily\";s:4:\"args\";a:0:{}s:8:\"interval\";i:43200;}}}i:1776593640;a:1:{s:34:\"wp_privacy_delete_old_export_files\";a:1:{s:32:\"40cd750bba9870f18aada2478b24840a\";a:3:{s:8:\"schedule\";s:6:\"hourly\";s:4:\"args\";a:0:{}s:8:\"interval\";i:3600;}}}i:1776595437;a:1:{s:17:\"wp_update_plugins\";a:1:{s:32:\"40cd750bba9870f18aada2478b24840a\";a:3:{s:8:\"schedule\";s:10:\"twicedaily\";s:4:\"args\";a:0:{}s:8:\"interval\";i:43200;}}}i:1776597237;a:1:{s:16:\"wp_update_themes\";a:1:{s:32:\"40cd750bba9870f18aada2478b24840a\";a:3:{s:8:\"schedule\";s:10:\"twicedaily\";s:4:\"args\";a:0:{}s:8:\"interval\";i:43200;}}}i:1776633285;a:1:{s:21:\"wp_update_user_counts\";a:1:{s:32:\"40cd750bba9870f18aada2478b24840a\";a:3:{s:8:\"schedule\";s:10:\"twicedaily\";s:4:\"args\";a:0:{}s:8:\"interval\";i:43200;}}}i:1776676440;a:2:{s:30:\"wp_site_health_scheduled_check\";a:1:{s:32:\"40cd750bba9870f18aada2478b24840a\";a:3:{s:8:\"schedule\";s:6:\"weekly\";s:4:\"args\";a:0:{}s:8:\"interval\";i:604800;}}s:32:\"recovery_mode_clean_expired_keys\";a:1:{s:32:\"40cd750bba9870f18aada2478b24840a\";a:3:{s:8:\"schedule\";s:5:\"daily\";s:4:\"args\";a:0:{}s:8:\"interval\";i:86400;}}}i:1776676485;a:2:{s:19:\"wp_scheduled_delete\";a:1:{s:32:\"40cd750bba9870f18aada2478b24840a\";a:3:{s:8:\"schedule\";s:5:\"daily\";s:4:\"args\";a:0:{}s:8:\"interval\";i:86400;}}s:25:\"delete_expired_transients\";a:1:{s:32:\"40cd750bba9870f18aada2478b24840a\";a:3:{s:8:\"schedule\";s:5:\"daily\";s:4:\"args\";a:0:{}s:8:\"interval\";i:86400;}}}i:1776676491;a:1:{s:30:\"wp_scheduled_auto_draft_delete\";a:1:{s:32:\"40cd750bba9870f18aada2478b24840a\";a:3:{s:8:\"schedule\";s:5:\"daily\";s:4:\"args\";a:0:{}s:8:\"interval\";i:86400;}}}i:1777194989;a:1:{s:30:\"wp_delete_temp_updater_backups\";a:1:{s:32:\"40cd750bba9870f18aada2478b24840a\";a:3:{s:8:\"schedule\";s:6:\"weekly\";s:4:\"args\";a:0:{}s:8:\"interval\";i:604800;}}}s:7:\"version\";i:2;}', 'on'),
 (2, 'siteurl', 'http://localhost/react/wordpress', 'on'),
 (3, 'home', 'http://localhost/react/wordpress', 'on'),
-(4, 'blogname', 'hawkprints', 'on'),
+(4, 'blogname', 'Five Rivers Print', 'on'),
 (5, 'blogdescription', '', 'on'),
 (6, 'users_can_register', '0', 'on'),
 (7, 'admin_email', 'ashutosh2801@gmail.com', 'on'),

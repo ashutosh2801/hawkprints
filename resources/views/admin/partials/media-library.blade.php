@@ -301,7 +301,12 @@ function handleMediaUpload(files) {
     .then(data => {
         document.getElementById('media-upload-progress').classList.add('hidden');
         if (data.success) {
-            loadMediaLibrary();
+            if (mediaLibraryState.attachProductId) {
+                closeMediaLibrary();
+                location.reload();
+            } else {
+                loadMediaLibrary();
+            }
         }
     })
     .catch(err => {
@@ -447,11 +452,18 @@ function insertSelectedImages() {
         headers: { 'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.content || '' },
         body: formData,
     })
-    .then(res => res.json())
+    .then(res => {
+        if (!res.ok) throw new Error('Attach failed: ' + res.status);
+        return res.json();
+    })
     .then(data => {
         if (data.success) {
             location.reload();
         }
+    })
+    .catch(err => {
+        console.error('Attach error:', err);
+        alert('Failed to attach images. Please try again.');
     });
 }
 

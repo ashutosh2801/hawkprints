@@ -1,24 +1,71 @@
 @extends('layouts.app')
 
-@section('title', $product->name . ' - Hawk Prints')
+@section('title', ($product->meta_title ?: $product->name) . ' - Five Rivers Print')
 @section('meta_description', $product->short_description ?? $product->meta_description)
+@section('og_title', ($product->meta_title ?: $product->name) . ' - Five Rivers Print')
+@section('og_description', $product->short_description ?? $product->meta_description)
+@section('og_image', $product->primary_image)
+@section('og_type', 'product')
+@section('og_url', url()->current())
 
 @section('content')
 <div class="bg-gray-100 py-8">
     <div class="container mx-auto px-4">
         <nav class="mb-6 text-sm">
-            <ol class="flex items-center gap-2 text-gray-600">
-                <li><a href="/" class="hover:text-blue-700">Home</a></li>
+            <ol class="flex items-center gap-2 text-gray-600" itemscope itemtype="https://schema.org/BreadcrumbList">
+                <li itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem">
+                    <a href="/" itemprop="item" class="hover:text-blue-700"><span itemprop="name">Home</span></a>
+                    <meta itemprop="position" content="1">
+                </li>
                 <li>/</li>
-                <li><a href="/shop" class="hover:text-blue-700">Shop</a></li>
+                <li itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem">
+                    <a href="/shop" itemprop="item" class="hover:text-blue-700"><span itemprop="name">Shop</span></a>
+                    <meta itemprop="position" content="2">
+                </li>
                 @if($product->category)
                 <li>/</li>
-                <li><a href="/shop/category/{{ $product->category->slug }}" class="hover:text-blue-700">{{ $product->category->name }}</a></li>
+                <li itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem">
+                    <a href="/shop/category/{{ $product->category->slug }}" itemprop="item" class="hover:text-blue-700"><span itemprop="name">{{ $product->category->name }}</span></a>
+                    <meta itemprop="position" content="3">
+                </li>
                 @endif
                 <li>/</li>
-                <li>{{ $product->name }}</li>
+                <li itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem">
+                    <span itemprop="name">{{ $product->name }}</span>
+                    <meta itemprop="position" content="{{ $product->category ? 4 : 3 }}">
+                </li>
             </ol>
         </nav>
+
+        <!-- JSON-LD Product -->
+        <script type="application/ld+json">
+        {
+            "@@context": "https://schema.org",
+            "@type": "Product",
+            "name": "{{ $product->name }}",
+            "description": "{{ strip_tags($product->short_description ?: $product->description) }}",
+            "image": "{{ $product->primary_image }}",
+            "sku": "{{ $product->sku }}",
+            @if($product->category)
+            "brand": {
+                "@type": "Brand",
+                "name": "{{ $product->category->name }}"
+            },
+            @endif
+            @if($product->base_price)
+            "offers": {
+                "@type": "Offer",
+                "price": "{{ $product->base_price }}",
+                "priceCurrency": "CAD",
+                "availability": "{{ $product->in_stock ? 'https://schema.org/InStock' : 'https://schema.org/OutOfStock' }}",
+                "url": "{{ url()->current() }}"
+            },
+            @endif
+            @if($product->category)
+            "category": "{{ $product->category->name }}"
+            @endif
+        }
+        </script>
 
         <div class="bg-white rounded-lg shadow-lg p-6 lg:p-8">
             <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
@@ -28,7 +75,7 @@
                         <div class="relative overflow-hidden rounded-lg bg-gray-100 cursor-zoom-in" id="mainImageContainer">
                             <div id="zoomStage" class="w-full aspect-square overflow-hidden">
                                 <img src="{{ $product->primary_image }}"
-                                     alt="{{ $product->name }}"
+                                     alt="{{ $product->name }} - Print Product"
                                      id="mainImage"
                                      class="w-full h-full object-cover transition-transform duration-100">
                             </div>
@@ -39,12 +86,12 @@
                             <div class="flex gap-3 overflow-x-auto pb-2" id="thumbnailSlider">
                                 <button onclick="changeMainImage('{{ $product->primary_image }}', event)"
                                         class="flex-shrink-0 w-20 h-20 rounded-lg overflow-hidden border-2 border-blue-500 hover:border-blue-700 transition">
-                                    <img src="{{ $product->primary_image }}" alt="Primary" class="w-full h-full object-cover">
+                                    <img src="{{ $product->primary_image }}" alt="{{ $product->name }} - Main Image" class="w-full h-full object-cover">
                                 </button>
                                 @foreach($product->productImages as $image)
                                 <button onclick="changeMainImage('{{ $image->image }}', event)"
                                         class="flex-shrink-0 w-20 h-20 rounded-lg overflow-hidden border-2 border-gray-200 hover:border-blue-500 transition">
-                                    <img src="{{ $image->image }}" alt="Gallery" class="w-full h-full object-cover">
+                                    <img src="{{ $image->image }}" alt="{{ $image->alt ?: $product->name . ' - Additional View' }}" class="w-full h-full object-cover">
                                 </button>
                                 @endforeach
                             </div>

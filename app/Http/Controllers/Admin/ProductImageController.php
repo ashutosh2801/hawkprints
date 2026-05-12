@@ -97,11 +97,13 @@ class ProductImageController extends Controller
 
         foreach ($request->image_ids as $imageId) {
             $image = ProductImage::find($imageId);
-            if ($image && !$image->product_id) {
-                $image->update([
-                    'product_id' => $product->id,
-                    'sort_order' => ++$maxOrder,
-                ]);
+            if ($image) {
+                if (!$image->product_id || $image->product_id != $product->id) {
+                    $image->update([
+                        'product_id' => $product->id,
+                        'sort_order' => ++$maxOrder,
+                    ]);
+                }
             }
         }
 

@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Customer;
 
 use App\Http\Controllers\Controller;
+use App\Models\AdminNotification;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -51,6 +52,12 @@ class AuthController extends Controller
             'email' => $validated['email'],
             'password' => Hash::make($validated['password']),
             'is_admin' => false,
+        ]);
+
+        AdminNotification::createNotification('signup', [
+            'name' => $user->name,
+            'email' => $user->email,
+            'source' => 'registration',
         ]);
 
         Auth::login($user);

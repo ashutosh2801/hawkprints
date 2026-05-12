@@ -1,6 +1,7 @@
 @extends('layouts.app')
 
-@section('title', 'Checkout - Hawk Prints')
+@section('title', 'Checkout - Five Rivers Print')
+@section('robots', 'noindex, nofollow')
 
 @section('content')
 <div class="bg-gray-100 py-8">
@@ -12,9 +13,14 @@
             <input type="hidden" name="payment_intent_id" id="paymentIntentId" value="">
             <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
                 <div class="lg:col-span-2 space-y-6">
+                    @if(session('error'))
+                    <div class="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg">
+                        <p class="font-medium">{{ session('error') }}</p>
+                    </div>
+                    @endif
                     @if($errors->any())
                     <div class="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg">
-                        <p class="font-medium">Please fill in all required fields:</p>
+                        <p class="font-medium">Please fix the following errors:</p>
                         <ul class="mt-2 list-disc list-inside text-sm">
                             @foreach($errors->all() as $error)
                             <li>{{ $error }}</li>
@@ -155,7 +161,7 @@
                         <div class="flex items-center justify-between mb-4">
                             <h2 class="text-xl font-bold">Shipping Address</h2>
                             <label class="flex items-center gap-2 cursor-pointer">
-                                <input type="checkbox" name="same_address" value="1" id="sameAddressCheckbox" class="w-4 h-4 text-blue-700 rounded border-gray-300 focus:ring-blue-700" onchange="toggleSameAddress()">
+                                <input type="checkbox" name="same_address" value="1" id="sameAddressCheckbox" class="w-4 h-4 text-blue-700 rounded border-gray-300 focus:ring-blue-700">
                                 <span class="text-sm text-gray-600">Same as billing</span>
                             </label>
                         </div>
@@ -241,7 +247,7 @@
                                 <span class="font-medium">${{ number_format($subtotal, 2) }}</span>
                             </div>
                             <div class="flex justify-between text-sm">
-                                <span class="text-gray-600">Tax (13%)</span>
+                                <span class="text-gray-600">Tax ({{ number_format($taxRateDisplay, 1) }}%)</span>
                                 <span class="font-medium">${{ number_format($tax, 2) }}</span>
                             </div>
                             <div class="flex justify-between text-sm">
@@ -351,7 +357,8 @@ async function createPaymentIntent() {
         body: JSON.stringify({})
     });
     const data = await response.json();
-    return data.clientSecret;
+    if (data.error) throw new Error(data.error);
+    return data.client_secret;
 }
 
 function showCardError(message) {
@@ -384,7 +391,15 @@ async function initStripe() {
     if (!stripeEnabled || !stripePublishableKey) return;
     
     stripe = Stripe(stripePublishableKey);
-    paymentIntentClientSecret = await createPaymentIntent();
+    
+    try {
+        paymentIntentClientSecret = await createPaymentIntent();
+    } catch (err) {
+        console.error('Failed to create payment intent:', err);
+        return;
+    }
+    
+    if (!paymentIntentClientSecret) return;
     
     const elements = stripe.elements({
         clientSecret: paymentIntentClientSecret,
@@ -436,25 +451,40 @@ async function initStripe() {
 async function handleStripePayment() {
     setLoading(true);
     hideCardError();
-    
-    const { error, paymentIntent } = await stripe.confirmCardPayment(paymentIntentClientSecret, {
-        payment_method: {
-            card: cardElement,
+
+    try {
+        const result = await Promise.race([
+            stripe.confirmCardPayment(paymentIntentClientSecret, {
+                payment_method: {
+                    card: cardElement,
+                }
+            }),
+            new Promise((_, reject) => setTimeout(() => reject(new Error('Payment timed out. Please try again.')), 30000))
+        ]);
+        
+        const { error, paymentIntent } = result;
+        
+        if (error) {
+            showCardError(error.message);
+            setLoading(false);
+            return null;
         }
-    });
-    
-    if (error) {
-        showCardError(error.message);
+        
+        if (paymentIntent && paymentIntent.status === 'succeeded') {
+            return paymentIntent.id;
+        }
+        
+        if (paymentIntent) {
+            showCardError('Payment status: ' + paymentIntent.status + '. Please try again.');
+        }
+        
+        setLoading(false);
+        return null;
+    } catch (err) {
+        showCardError('Payment error: ' + err.message);
         setLoading(false);
         return null;
     }
-    
-    if (paymentIntent && paymentIntent.status === 'succeeded') {
-        return paymentIntent.id;
-    }
-    
-    setLoading(false);
-    return null;
 }
 
 document.addEventListener('DOMContentLoaded', function() {
@@ -500,14 +530,31 @@ document.addEventListener('DOMContentLoaded', function() {
         if (isStripeSelected && stripe) {
             e.preventDefault();
             hideCardError();
-            
-            const paymentIntentId = await handleStripePayment();
-            
-            if (paymentIntentId) {
-                document.getElementById('paymentIntentId').value = paymentIntentId;
-            } else {
+
+            if (!paymentIntentClientSecret || !cardElement) {
+                showCardError('Payment not initialized. Please reload the page and try again.');
                 return;
             }
+            
+            try {
+                const paymentIntentId = await handleStripePayment();
+                
+                if (paymentIntentId) {
+                    document.getElementById('paymentIntentId').value = paymentIntentId;
+                    if (sameAddressCheckbox && sameAddressCheckbox.checked) {
+                        document.getElementById('shipping_address').value = document.getElementById('billing_address').value;
+                        document.getElementById('shipping_city').value = document.getElementById('billing_city').value;
+                        document.getElementById('shipping_province').value = document.getElementById('billing_province').value;
+                        document.getElementById('shipping_postal').value = document.getElementById('billing_postal').value;
+                        document.getElementById('shipping_country').value = document.getElementById('billing_country').value;
+                    }
+                    checkoutForm.submit();
+                }
+            } catch (err) {
+                showCardError('Payment failed: ' + err.message);
+                setLoading(false);
+            }
+            return;
         }
         
         if (sameAddressCheckbox && sameAddressCheckbox.checked) {

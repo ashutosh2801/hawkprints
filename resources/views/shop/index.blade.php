@@ -1,8 +1,20 @@
 @extends('layouts.app')
 
-@section('title', 'Shop - Hawk Prints')
+@section('title', 'Shop - Five Rivers Print')
+@section('meta_description', 'Browse our full catalog of printing products. From business cards to banners, find everything you need at Five Rivers Print.')
 
 @section('content')
+<!-- JSON-LD BreadcrumbList -->
+<script type="application/ld+json">
+{
+    "@@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    "itemListElement": [
+        {"@type": "ListItem", "position": 1, "name": "Home", "item": "{{ url('/') }}"},
+        {"@type": "ListItem", "position": 2, "name": "Shop", "item": "{{ url('/shop') }}"}
+    ]
+}
+</script>
 <div class="bg-gray-100 py-8">
     <div class="container mx-auto px-4">
         <div class="flex flex-col lg:flex-row gap-8">

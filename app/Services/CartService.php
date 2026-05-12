@@ -311,7 +311,10 @@ class CartService
     public function getTax(?float $taxRate = null): float
     {
         if ($taxRate === null) {
-            $taxRate = floatval(\App\Models\Setting::get('tax_rate', '0.13'));
+            $taxRate = floatval(\App\Models\Setting::get('tax_rate', '13'));
+        }
+        if ($taxRate > 1) {
+            $taxRate = $taxRate / 100;
         }
         return ($this->getSubtotal() - $this->getDiscount()) * $taxRate;
     }
@@ -336,7 +339,7 @@ class CartService
         return $count;
     }
 
-    public function getFormattedTotal(float $shipping = 0, float $taxRate = 0.13): string
+    public function getFormattedTotal(float $shipping = 0, ?float $taxRate = null): string
     {
         return '$' . number_format($this->getTotal($shipping, $taxRate), 2);
     }
