@@ -76,5 +76,10 @@ class HomePageSection extends Model
             'description' => 'Latest products section',
             'partial' => 'front.partials.new-arrivals',
         ],
+        'software-development-page' => [
+            'title' => 'Software Development Page',
+            'description' => 'Full page content for the Software Development services page',
+            'partial' => null,
+        ],
     ];
 }

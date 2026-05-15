@@ -1,15 +1,9 @@
 <section class="py-20 bg-white">
     <div class="container mx-auto px-4">
-        <div class="flex flex-col md:flex-row md:items-end md:justify-between mb-14">
-            <div>
-                <span class="inline-block px-4 py-1.5 bg-blue-50 text-blue-700 text-sm font-medium rounded-full mb-4">Just In</span>
-                <h2 class="text-3xl md:text-4xl font-bold text-gray-900">{{ $heading ?? 'New Arrivals' }}</h2>
-                <p class="mt-4 text-lg text-gray-500 max-w-xl">Fresh additions to our collection, ready to bring your ideas to life</p>
-            </div>
-            <a href="{{ route('shop') }}" class="mt-6 md:mt-0 inline-flex items-center gap-2 text-blue-700 font-medium hover:text-blue-800 transition-colors group">
-                View all products
-                <svg class="w-5 h-5 transition-transform group-hover:translate-x-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"/></svg>
-            </a>
+        <div class="text-center mb-14">
+            <span class="inline-block px-4 py-1.5 bg-blue-50 text-blue-700 text-sm font-medium rounded-full mb-4">Just In</span>
+            <h2 class="text-3xl md:text-4xl font-bold text-gray-900">{{ $heading ?? 'New Arrivals' }}</h2>
+            <p class="mt-4 text-lg text-gray-500 max-w-xl mx-auto">Fresh additions to our collection, ready to bring your ideas to life</p>
         </div>
         <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
             @php

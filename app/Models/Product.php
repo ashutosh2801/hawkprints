@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 
 class Product extends Model
 {
@@ -64,6 +65,16 @@ class Product extends Model
         return $this->hasMany(PricingOption::class)->orderBy('sort_order');
     }
 
+    public function fileSetup(): HasOne
+    {
+        return $this->hasOne(ProductFileSetup::class);
+    }
+
+    public function templates(): HasMany
+    {
+        return $this->hasMany(ProductTemplate::class)->orderBy('sort_order');
+    }
+
     public function getPriceAttribute()
     {
         return $this->sale_price ?? $this->base_price;
@@ -80,9 +91,14 @@ class Product extends Model
             return $this->image;
         }
 
-        $productImages = $this->productImages()->first();
-        if ($productImages && $productImages->image) {
-            return $productImages->image;
+        $primary = $this->productImages()->where('is_primary', true)->first();
+        if ($primary && $primary->image) {
+            return $primary->image;
+        }
+
+        $first = $this->productImages()->first();
+        if ($first && $first->image) {
+            return $first->image;
         }
 
         return '';

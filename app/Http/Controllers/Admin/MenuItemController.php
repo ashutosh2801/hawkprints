@@ -10,18 +10,27 @@ use Illuminate\Http\Request;
 
 class MenuItemController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-        $menuItems = MenuItem::with('children')->orderBy('sort_order')->get();
-        $allItems = MenuItem::orderBy('name')->get();
+        $currentLocation = $request->get('location', 'header');
+
+        $allItems = MenuItem::where('location', $currentLocation)
+            ->orderBy('sort_order')
+            ->get();
+
+        $allHeaderItems = MenuItem::where('location', 'header')
+            ->orderBy('name')
+            ->get();
+
         $categories = Category::where('is_active', true)->orderBy('name')->get();
         $products = Product::where('is_active', true)->orderBy('name')->get();
         
         return view('admin.menu-items.index', [
-            'menuItems' => $menuItems, 
             'allItems' => $allItems,
+            'allHeaderItems' => $allHeaderItems,
             'categories' => $categories,
             'products' => $products,
+            'currentLocation' => $currentLocation,
         ]);
     }
 
@@ -118,13 +127,13 @@ class MenuItemController extends Controller
     public function edit($id)
     {
         $menuItem = MenuItem::findOrFail($id);
-        $allItems = MenuItem::orderBy('name')->get();
+        $allHeaderItems = MenuItem::where('location', 'header')->orderBy('name')->get();
         $categories = Category::where('is_active', true)->orderBy('name')->get();
         $products = Product::where('is_active', true)->orderBy('name')->get();
         
         return view('admin.menu-items.edit', [
             'menuItem' => $menuItem,
-            'allItems' => $allItems, 
+            'allHeaderItems' => $allHeaderItems,
             'categories' => $categories,
             'products' => $products,
         ]);

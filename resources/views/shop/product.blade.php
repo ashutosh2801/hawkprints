@@ -83,7 +83,7 @@
 
                         @if($product->productImages->count() > 0)
                         <div class="relative">
-                            <div class="flex gap-3 overflow-x-auto pb-2" id="thumbnailSlider">
+                            <div class="flex gap-3 overflow-x-hidden pb-2" id="thumbnailSlider">
                                 <button onclick="changeMainImage('{{ $product->primary_image }}', event)"
                                         class="flex-shrink-0 w-20 h-20 rounded-lg overflow-hidden border-2 border-blue-500 hover:border-blue-700 transition">
                                     <img src="{{ $product->primary_image }}" alt="{{ $product->name }} - Main Image" class="w-full h-full object-cover">
@@ -119,14 +119,71 @@
                             <p class="text-sm text-gray-500 mb-4">SKU: {{ $product->sku }}</p>
                         @endif
 
-                        @if($product->description)
-                        <div class="mt-8">
-                            <h3 class="text-lg font-semibold mb-3">Product Details</h3>
-                            <div class="text-gray-600 text-sm prose prose-sm max-w-none">
-                                {!! $product->description !!}
+                        <div class="mt-8" x-data="{ tab: 'details' }">
+                            <div class="border-b border-gray-200 mb-4">
+                                <nav class="flex gap-6 -mb-px">
+                                    @if($product->description)
+                                    <button @click="tab = 'details'" :class="tab === 'details' ? 'border-blue-700 text-blue-700' : 'border-transparent text-gray-500 hover:text-gray-700'" class="pb-3 border-b-2 text-sm font-medium transition">Product Details</button>
+                                    @endif
+                                    @if($product->fileSetup && $product->fileSetup->specifications)
+                                    <button @click="tab = 'file-setup'" :class="tab === 'file-setup' ? 'border-blue-700 text-blue-700' : 'border-transparent text-gray-500 hover:text-gray-700'" class="pb-3 border-b-2 text-sm font-medium transition">File Setup</button>
+                                    @endif
+                                    @if($product->templates->count() > 0)
+                                    <button @click="tab = 'templates'" :class="tab === 'templates' ? 'border-blue-700 text-blue-700' : 'border-transparent text-gray-500 hover:text-gray-700'" class="pb-3 border-b-2 text-sm font-medium transition">Templates</button>
+                                    @endif
+                                </nav>
                             </div>
+
+                            @if($product->description)
+                            <div x-show="tab === 'details'" x-transition:enter="transition ease-out duration-200" x-transition:enter-start="opacity-0" x-transition:enter-end="opacity-100">
+                                <div class="text-gray-600 text-sm prose prose-sm max-w-none">
+                                    {!! $product->description !!}
+                                </div>
+                            </div>
+                            @endif
+
+                            @if($product->fileSetup && $product->fileSetup->specifications)
+                            @php $fs = $product->fileSetup->specifications; @endphp
+                            @php $specRows = $fs['rows'] ?? $fs['additional'] ?? []; @endphp
+                            <div x-show="tab === 'file-setup'" x-transition:enter="transition ease-out duration-200" x-transition:enter-start="opacity-0" x-transition:enter-end="opacity-100">
+                                <div class="bg-gray-50 rounded-lg p-4">
+                                    <table class="w-full text-sm">
+                                        <tbody>
+                                            @forelse($specRows as $spec)
+                                            @if(!empty($spec['key']) || !empty($spec['value']))
+                                            <tr class="border-b border-gray-200">
+                                                <td class="py-2 pr-4 text-gray-500 font-medium w-1/3">{{ $spec['key'] }}</td>
+                                                <td class="py-2">{{ $spec['value'] }}</td>
+                                            </tr>
+                                            @endif
+                                            @empty
+                                            <tr>
+                                                <td colspan="2" class="py-2 text-gray-400 text-center">No specifications configured.</td>
+                                            </tr>
+                                            @endforelse
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                            @endif
+
+                            @if($product->templates->count() > 0)
+                            <div x-show="tab === 'templates'" x-transition:enter="transition ease-out duration-200" x-transition:enter-start="opacity-0" x-transition:enter-end="opacity-100">
+                                <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                                    @foreach($product->templates as $template)
+                                    <a href="{{ \Storage::url($template->file) }}" target="_blank" class="flex items-center gap-3 p-3 bg-gray-50 rounded-lg border hover:border-blue-300 hover:bg-blue-50 transition group">
+                                        <svg class="w-8 h-8 text-blue-600 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
+                                        <div class="flex-1 min-w-0">
+                                            <p class="text-sm font-medium text-gray-800 group-hover:text-blue-700 truncate">{{ $template->name }}</p>
+                                            <p class="text-xs text-gray-500">{{ strtoupper($template->format) }} template</p>
+                                        </div>
+                                        <svg class="w-5 h-5 text-gray-400 group-hover:text-blue-600 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/></svg>
+                                    </a>
+                                    @endforeach
+                                </div>
+                            </div>
+                            @endif
                         </div>
-                        @endif
                     </div>
                 </div>
 

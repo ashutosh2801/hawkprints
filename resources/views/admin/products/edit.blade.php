@@ -21,6 +21,8 @@
             <nav class="flex -mb-px" aria-label="Tabs">
                 <button onclick="switchTab('basic')" id="tab-basic" class="tab-btn py-4 px-6 border-b-2 border-blue-600 text-blue-600 font-medium text-sm">Basic Details</button>
                 <button onclick="switchTab('pricing')" id="tab-pricing" class="tab-btn py-4 px-6 border-b-2 border-transparent text-gray-500 hover:text-gray-700 font-medium text-sm">Pricing Options</button>
+                <button onclick="switchTab('file-setup')" id="tab-file-setup" class="tab-btn py-4 px-6 border-b-2 border-transparent text-gray-500 hover:text-gray-700 font-medium text-sm">File Setup</button>
+                <button onclick="switchTab('templates')" id="tab-templates" class="tab-btn py-4 px-6 border-b-2 border-transparent text-gray-500 hover:text-gray-700 font-medium text-sm">Templates</button>
                 <button onclick="switchTab('images')" id="tab-images" class="tab-btn py-4 px-6 border-b-2 border-transparent text-gray-500 hover:text-gray-700 font-medium text-sm">Images</button>
             </nav>
         </div>
@@ -317,6 +319,93 @@
                 </form>
             </div>
 
+            <!-- File Setup Tab -->
+            <div id="panel-file-setup" class="tab-panel hidden">
+                <div class="mb-4">
+                    <h4 class="text-lg font-medium">File Specifications</h4>
+                    <p class="text-sm text-gray-600">Add key-value pairs for file setup requirements. These will be displayed as a table on the product page.</p>
+                </div>
+
+                @php $fileSetup = $product->fileSetup; @endphp
+                @php $specs = $fileSetup ? $fileSetup->specifications : []; @endphp
+
+                <form action="/admin/products/{{ $product->id }}/file-setup" method="POST">
+                    @csrf
+                    <div class="max-w-2xl">
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Specifications</label>
+                        <div id="file-specs-container">
+                            @forelse(($specs['rows'] ?? $specs['additional'] ?? []) as $i => $spec)
+                            <div class="flex items-center gap-2 mb-2 spec-row">
+                                <input type="text" name="specs[{{ $i }}][key]" value="{{ $spec['key'] ?? '' }}" placeholder="Label (e.g. Bleed)" class="flex-1 px-3 py-2 text-sm border rounded-lg">
+                                <input type="text" name="specs[{{ $i }}][value]" value="{{ $spec['value'] ?? '' }}" placeholder="Value (e.g. 0.125 inch)" class="flex-1 px-3 py-2 text-sm border rounded-lg">
+                                <button type="button" onclick="this.closest('.spec-row').remove()" class="p-2 text-red-600 hover:bg-red-100 rounded">
+                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+                                </button>
+                            </div>
+                            @empty
+                            <div class="flex items-center gap-2 mb-2 spec-row">
+                                <input type="text" name="specs[0][key]" placeholder="Label (e.g. Bleed)" class="flex-1 px-3 py-2 text-sm border rounded-lg">
+                                <input type="text" name="specs[0][value]" placeholder="Value (e.g. 0.125 inch)" class="flex-1 px-3 py-2 text-sm border rounded-lg">
+                                <button type="button" onclick="this.closest('.spec-row').remove()" class="p-2 text-red-600 hover:bg-red-100 rounded">
+                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+                                </button>
+                            </div>
+                            @endforelse
+                        </div>
+                        <button type="button" onclick="addSpecRow()" class="mt-1 px-3 py-1 text-sm text-blue-600 hover:bg-blue-50 rounded">+ Add Row</button>
+                    </div>
+
+                    <div class="mt-6">
+                        <button type="submit" class="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700">Save File Setup</button>
+                    </div>
+                </form>
+            </div>
+
+            <!-- Templates Tab -->
+            <div id="panel-templates" class="tab-panel hidden">
+                <div class="mb-4">
+                    <h4 class="text-lg font-medium">Downloadable Templates</h4>
+                    <p class="text-sm text-gray-600">Upload template files that customers can download from the product page.</p>
+                </div>
+
+                @forelse($product->templates as $template)
+                <div class="flex items-center justify-between bg-gray-50 p-3 rounded-lg mb-2 border">
+                    <div class="flex items-center gap-3">
+                        <svg class="w-6 h-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
+                        <div>
+                            <p class="text-sm font-medium">{{ $template->name }}</p>
+                            <p class="text-xs text-gray-500">{{ strtoupper($template->format) }} file</p>
+                        </div>
+                    </div>
+                    <form action="/admin/products/templates/{{ $template->id }}" method="POST" onsubmit="return confirm('Delete this template?')">
+                        @csrf @method('DELETE')
+                        <button type="submit" class="px-3 py-1 text-sm text-blue-700 bg-blue-100 rounded-lg hover:bg-blue-200">Delete</button>
+                    </form>
+                </div>
+                @empty
+                <div class="bg-gray-50 p-4 rounded-lg mb-4 text-gray-500 text-sm">No templates yet.</div>
+                @endforelse
+
+                <hr class="my-6">
+
+                <h4 class="text-md font-medium mb-3">Upload New Template</h4>
+                <form action="/admin/products/{{ $product->id }}/templates" method="POST" enctype="multipart/form-data" class="bg-blue-50 p-4 rounded-lg border max-w-lg">
+                    @csrf
+                    <div class="space-y-3">
+                        <div>
+                            <label class="block text-xs font-medium text-gray-700 mb-1">Template Name</label>
+                            <input type="text" name="name" required class="w-full px-3 py-2 text-sm border rounded-lg" placeholder="e.g. AI Template">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-medium text-gray-700 mb-1">File</label>
+                            <input type="file" name="file" required class="w-full px-3 py-2 text-sm border rounded-lg" accept=".ai,.psd,.pdf,.eps,.tif,.tiff,.jpg,.jpeg,.png,.svg,.zip">
+                            <small class="text-gray-500">Accepted: ai, psd, pdf, eps, tif, jpg, png, svg, zip</small>
+                        </div>
+                        <button type="submit" class="px-4 py-2 bg-green-600 text-white text-sm rounded-lg hover:bg-green-700">Upload Template</button>
+                    </div>
+                </form>
+            </div>
+
             <!-- Images Tab -->
             <div id="panel-images" class="tab-panel hidden">
                 <div class="flex items-center justify-between mb-4">
@@ -554,6 +643,22 @@ function attachPriceOverrideListeners(row) {
             }
         });
     });
+}
+
+let specRowIndex = {{ count($specs['rows'] ?? $specs['additional'] ?? []) }};
+function addSpecRow() {
+    const container = document.getElementById('file-specs-container');
+    const row = document.createElement('div');
+    row.className = 'flex items-center gap-2 mb-2 spec-row';
+    row.innerHTML = `
+        <input type="text" name="specs[${specRowIndex}][key]" placeholder="Label" class="flex-1 px-3 py-2 text-sm border rounded-lg">
+        <input type="text" name="specs[${specRowIndex}][value]" placeholder="Value" class="flex-1 px-3 py-2 text-sm border rounded-lg">
+        <button type="button" onclick="this.closest('.spec-row').remove()" class="p-2 text-red-600 hover:bg-red-100 rounded">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+        </button>
+    `;
+    container.appendChild(row);
+    specRowIndex++;
 }
 
 function setPrimaryImage(imageId) {

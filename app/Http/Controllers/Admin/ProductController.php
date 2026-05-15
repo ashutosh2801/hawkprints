@@ -8,7 +8,10 @@ use App\Models\Category;
 use App\Models\PricingOption;
 use App\Models\PricingOptionType;
 use App\Models\ProductImage;
+use App\Models\ProductFileSetup;
+use App\Models\ProductTemplate;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
 
 class ProductController extends Controller
 {
@@ -23,8 +26,25 @@ class ProductController extends Controller
         if ($request->category) {
             $query->where('category_id', $request->category);
         }
+
+        if ($request->has_image === 'yes') {
+            $query->where(function($q) {
+                $q->whereNotNull('image')->where('image', '!=', '')
+                  ->orWhereHas('productImages', function($q2) {
+                      $q2->whereNotNull('image')->where('image', '!=', '');
+                  });
+            });
+        } elseif ($request->has_image === 'no') {
+            $query->where(function($q) {
+                $q->whereNull('image')->orWhere('image', '')
+                  ->whereDoesntHave('productImages', function($q2) {
+                      $q2->whereNotNull('image')->where('image', '!=', '');
+                  });
+            });
+        }
         
-        $products = $query->orderBy('created_at', 'desc')->paginate(20);
+        $perPage = min((int) $request->per_page, 200) ?: 20;
+        $products = $query->orderBy('created_at', 'desc')->paginate($perPage);
         $categories = Category::where('is_active', true)->get();
         
         return view('admin.products.index', compact('products', 'categories'));
@@ -120,6 +140,73 @@ public function edit($id)
             $product->delete();
         }
         return redirect('/admin/products')->with('success', 'Product deleted.');
+    }
+
+    public function bulkDestroy(Request $request)
+    {
+        $ids = $request->input('product_ids', []);
+        if (empty($ids)) {
+            return back()->with('error', 'No products selected.');
+        }
+
+        Product::whereIn('id', $ids)->delete();
+
+        return redirect('/admin/products')->with('success', count($ids) . ' products deleted.');
+    }
+
+    public function saveFileSetup(Request $request, Product $product)
+    {
+        $specs = $request->input('specs', []);
+
+        $rows = [];
+        if (is_array($specs)) {
+            foreach ($specs as $spec) {
+                $key = trim($spec['key'] ?? '');
+                $value = trim($spec['value'] ?? '');
+                if ($key !== '' || $value !== '') {
+                    $rows[] = ['key' => $key, 'value' => $value];
+                }
+            }
+        }
+
+        ProductFileSetup::updateOrCreate(
+            ['product_id' => $product->id],
+            ['specifications' => ['rows' => $rows]]
+        );
+
+        return back()->with('success', 'File setup saved.');
+    }
+
+    public function addTemplate(Request $request, Product $product)
+    {
+        $request->validate([
+            'name' => 'required|string|max:255',
+            'file' => 'required|file|mimes:ai,psd,pdf,eps,tif,tiff,jpg,jpeg,png,svg,zip',
+        ]);
+
+        $file = $request->file('file');
+        $path = $file->store('product-templates', 'public');
+
+        $maxSort = $product->templates()->max('sort_order') ?? 0;
+
+        $product->templates()->create([
+            'name' => $request->name,
+            'file' => $path,
+            'format' => $file->getClientOriginalExtension(),
+            'sort_order' => $maxSort + 1,
+        ]);
+
+        return back()->with('success', 'Template added.');
+    }
+
+    public function deleteTemplate(ProductTemplate $template)
+    {
+        if ($template->file) {
+            Storage::disk('public')->delete($template->file);
+        }
+        $template->delete();
+
+        return back()->with('success', 'Template deleted.');
     }
 
     public function addPricingOption(Request $request, Product $product)

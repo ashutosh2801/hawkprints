@@ -4,6 +4,7 @@ namespace App\Http\Controllers\SoftwareDevelopment;
 
 use App\Http\Controllers\Controller;
 use App\Models\AdminNotification;
+use App\Models\HomePageSection;
 use App\Models\SoftwareDevelopmentRequest;
 use Illuminate\Http\Request;
 
@@ -11,7 +12,9 @@ class SoftwareDevelopmentController extends Controller
 {
     public function index()
     {
-        return view('front.software-development');
+        $section = HomePageSection::where('key', 'software-development-page')->first();
+        $settings = $section ? ($section->settings ?? []) : [];
+        return view('front.software-development', compact('settings'));
     }
 
     public function submit(Request $request)

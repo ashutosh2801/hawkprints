@@ -5,13 +5,19 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\ProductImage;
 use App\Models\Product;
+use App\Services\ImageStorageService;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Log;
-use Intervention\Image\Laravel\Facades\Image;
 
 class ProductImageController extends Controller
 {
+    protected $storageService;
+
+    public function __construct(ImageStorageService $storageService)
+    {
+        $this->storageService = $storageService;
+    }
+
     public function store(Request $request)
     {
         $productId = $request->input('product_id');
@@ -38,26 +44,19 @@ class ProductImageController extends Controller
         
         foreach ($files as $file) {
             if (!$file) continue;
-            
+
             $filename = uniqid() . '.' . $file->getClientOriginalExtension();
-            
-            $originalImage = Image::read($file);
-            
-            $originalImage->save(storage_path('app/public/products/' . $filename));
-            
-            $smallImage = clone $originalImage;
-            $smallImage->scale(width: 300);
-            $smallImage->save(storage_path('app/public/products/small/' . $filename));
-            
-            $mediumImage = clone $originalImage;
-            $mediumImage->scale(width: 600);
-            $mediumImage->save(storage_path('app/public/products/medium/' . $filename));
-            
+
+            $paths = $this->storageService->uploadWithSizes($file, $filename, [
+                'small' => 300,
+                'medium' => 600,
+            ]);
+
             ProductImage::create([
                 'product_id' => $productId,
-                'image' => '/storage/products/' . $filename,
-                'small' => '/storage/products/small/' . $filename,
-                'medium' => '/storage/products/medium/' . $filename,
+                'image' => $paths['image'],
+                'small' => $paths['small'] ?? null,
+                'medium' => $paths['medium'] ?? null,
                 'sort_order' => ++$maxOrder,
                 'is_active' => true,
             ]);
@@ -72,11 +71,10 @@ class ProductImageController extends Controller
 
         foreach ($imagePaths as $path) {
             if ($path) {
-                $storagePath = str_replace('/storage/', '', $path);
                 try {
-                    Storage::disk('public')->delete($storagePath);
+                    $this->storageService->delete($path);
                 } catch (\Exception $e) {
-                    Log::error('Failed to delete: ' . $storagePath);
+                    Log::error('Failed to delete: ' . $path);
                 }
             }
         }

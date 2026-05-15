@@ -9,11 +9,22 @@
         <div class="mb-4 p-4 bg-green-100 text-green-700 rounded-lg">{{ session('success') }}</div>
         @endif
 
+        <div x-data="{ showForm: false }">
         <div class="flex justify-between items-center mb-6">
             <h2 class="text-xl font-bold">Manage Menu Items</h2>
+            <div class="flex items-center gap-3">
+                <form method="GET" action="{{ route('admin.menu-items') }}" class="flex items-center gap-2">
+                    <label class="text-sm text-gray-600">Filter:</label>
+                    <select name="location" onchange="this.form.submit()" class="px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-500">
+                        <option value="header" {{ $currentLocation === 'header' ? 'selected' : '' }}>Header Navigation</option>
+                        <option value="footer" {{ $currentLocation === 'footer' ? 'selected' : '' }}>Footer</option>
+                    </select>
+                </form>
+                <button @click="showForm = !showForm" class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 text-sm font-medium transition" x-text="showForm ? 'Cancel' : '+ Add New Menu'"></button>
+            </div>
         </div>
 
-        <form method="POST" action="{{ route('admin.menu-items.store') }}" class="mb-8 p-4 bg-gray-50 rounded-lg">
+        <form method="POST" action="{{ route('admin.menu-items.store') }}" x-show="showForm" x-cloak class="mb-8 p-4 bg-gray-50 rounded-lg">
             @csrf
             <h3 class="font-medium mb-4">Add New Menu Item</h3>
             
@@ -41,9 +52,19 @@
                     <label class="block text-sm font-medium text-gray-700 mb-1">Parent Menu Item</label>
                     <select name="parent_id" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500">
                         <option value="">-- None (Top Level) --</option>
-                        @php $topItems = App\Models\MenuItem::whereNull('parent_id')->orderBy('name')->get(); @endphp
-                        @foreach($topItems as $top)
-                        <option value="{{ $top->id }}">{{ $top->name }}</option>
+                        @php
+                            function renderParentOption($item, $allHeaderItems, $depth = 0) {
+                                $prefix = str_repeat('↳ ', $depth);
+                                echo '<option value="' . $item->id . '">' . $prefix . e($item->name) . '</option>';
+                                $children = $allHeaderItems->where('parent_id', $item->id);
+                                foreach ($children as $child) {
+                                    renderParentOption($child, $allHeaderItems, $depth + 1);
+                                }
+                            }
+                            $topHeaderItems = $allHeaderItems->whereNull('parent_id');
+                        @endphp
+                        @foreach($topHeaderItems as $parent)
+                            @php renderParentOption($parent, $allHeaderItems, 0); @endphp
                         @endforeach
                     </select>
                 </div>
@@ -107,6 +128,7 @@
                 </div>
             </div>
         </form>
+        </div>
 
 <div class="overflow-x-auto">
             <table class="w-full">
@@ -161,47 +183,39 @@ function getDisplayName(item) {
     return item.name;
 }
 
-function renderMenuItems() {
-    var tbody = document.getElementById('menu-items-tbody');
-    
-    // Separate parent items and child items
-    var parents = allItems.filter(function(x) { return !x.parent_id; });
-    var children = allItems.filter(function(x) { return x.parent_id; });
-    
-    if (allItems.length === 0) {
-        tbody.innerHTML = '<tr><td colspan="7" class="px-6 py-4 text-center text-gray-500">No menu items found. Add one above.</td></tr>';
-        return;
-    }
-    
+function renderTree(parentId, depth) {
+    var items = allItems.filter(function(x) { return x.parent_id === parentId; });
+    items.sort(function(a, b) { return a.sort_order - b.sort_order; });
+
     var html = '';
-    
-    // Sort parents by sort_order
-    parents.sort(function(a, b) { return a.sort_order - b.sort_order; });
-    
-    parents.forEach(function(parent) {
-        var status = parent.is_active ? '<span class="text-green-600">Active</span>' : '<span class="text-gray-400">Inactive</span>';
-        var toggleText = parent.is_active ? 'Disable' : 'Enable';
-        var displayName = getDisplayName(parent);
-        var typeLabel = parent.type === 'category' ? 'Category' : (parent.type === 'product' ? 'Product' : 'Custom');
-        
-        var locationLabel = parent.location === 'header' ? '<span class="text-blue-600">Header</span>' : (parent.location === 'footer' ? '<span class="text-green-600">Footer</span>' : '<span class="text-gray-400">—</span>');
-        
-        html += '<tr class="bg-blue-50">' +
-            '<td class="px-6 py-3 font-bold text-blue-700">' + displayName + '</td>' +
-            '<td class="px-6 py-3 text-gray-500">' + typeLabel + '</td>' +
-            '<td class="px-6 py-3">' + locationLabel + '</td>' +
-            '<td class="px-6 py-3 text-gray-500 text-sm">' + (parent.slug || '-') + '</td>' +
-            '<td class="px-6 py-3">' + parent.sort_order + '</td>' +
-            '<td class="px-6 py-3">' + status + '</td>' +
+    items.forEach(function(item) {
+        var indent = 24 + depth * 20;
+        var isTop = depth === 0;
+        var rowClass = isTop ? 'bg-blue-50' : '';
+        var nameClass = isTop ? 'font-bold text-blue-700' : 'text-gray-600';
+        var status = item.is_active ? '<span class="text-green-600">Active</span>' : '<span class="text-gray-400">Inactive</span>';
+        var toggleText = item.is_active ? 'Disable' : 'Enable';
+        var displayName = getDisplayName(item);
+        var typeLabel = item.type === 'category' ? 'Category' : (item.type === 'product' ? 'Product' : 'Custom');
+        var locationLabel = item.location === 'header' ? '<span class="text-blue-600">Header</span>' : (item.location === 'footer' ? '<span class="text-green-600">Footer</span>' : '<span class="text-gray-400">—</span>');
+        var prefix = depth > 0 ? '↳ ' : '';
+
+        html += '<tr class="' + rowClass + '">' +
+            '<td class="px-6 py-3" style="padding-left: ' + indent + 'px;"><span class="' + nameClass + '">' + prefix + displayName + '</span></td>' +
+            '<td class="px-6 py-3 text-gray-500 text-sm">' + typeLabel + '</td>' +
+            '<td class="px-6 py-3 text-sm">' + locationLabel + '</td>' +
+            '<td class="px-6 py-3 text-gray-500 text-sm">' + (item.slug || '-') + '</td>' +
+            '<td class="px-6 py-3 text-sm">' + item.sort_order + '</td>' +
+            '<td class="px-6 py-3 text-sm">' + status + '</td>' +
             '<td class="px-6 py-3">' +
                 '<div class="flex items-center gap-2">' +
-                    '<a href="/admin/menu-items/' + parent.id + '/edit" class="inline-flex items-center justify-center w-8 h-8 bg-blue-50 text-blue-600 rounded-lg hover:bg-blue-100 transition" title="Edit">' +
+                    '<a href="/admin/menu-items/' + item.id + '/edit" class="inline-flex items-center justify-center w-8 h-8 bg-blue-50 text-blue-600 rounded-lg hover:bg-blue-100 transition" title="Edit">' +
                         '<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/></svg>' +
                     '</a>' +
-                    '<a href="/admin/menu-items/' + parent.id + '/toggle" class="inline-flex items-center justify-center w-8 h-8 bg-green-50 text-green-600 rounded-lg hover:bg-green-100 transition" title="' + toggleText + '">' +
+                    '<a href="/admin/menu-items/' + item.id + '/toggle" class="inline-flex items-center justify-center w-8 h-8 bg-green-50 text-green-600 rounded-lg hover:bg-green-100 transition" title="' + toggleText + '">' +
                         '<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/></svg>' +
                     '</a>' +
-                    '<form action="/admin/menu-items/' + parent.id + '" method="POST" onsubmit="return confirm(\'Delete this item?\')">' +
+                    '<form action="/admin/menu-items/' + item.id + '" method="POST" onsubmit="return confirm(\'Delete this item?\')">' +
                         '<input type="hidden" name="_token" value="{{ csrf_token() }}">' +
                         '<input type="hidden" name="_method" value="DELETE">' +
                         '<button type="submit" class="inline-flex items-center justify-center w-8 h-8 bg-red-50 text-red-600 rounded-lg hover:bg-red-100 transition" title="Delete">' +
@@ -211,52 +225,22 @@ function renderMenuItems() {
                 '</div>' +
             '</td>' +
         '</tr>';
-        
-        // Render children
-        var parentChildren = children.filter(function(x) { return x.parent_id === parent.id; });
-        parentChildren.sort(function(a, b) { return a.sort_order - b.sort_order; });
-        
-        parentChildren.forEach(function(child) {
-            var cstatus = child.is_active ? '<span class="text-green-600">Active</span>' : '<span class="text-gray-400">Inactive</span>';
-            var ctoggleText = child.is_active ? 'Disable' : 'Enable';
-            var cdisplayName = getDisplayName(child);
-            var ctypeLabel = child.type === 'category' ? 'Category' : (child.type === 'product' ? 'Product' : 'Custom');
-            
-            var clocationLabel = child.location === 'header' ? '<span class="text-blue-600">Header</span>' : (child.location === 'footer' ? '<span class="text-green-600">Footer</span>' : '<span class="text-gray-400">—</span>');
-            
-            html += '<tr>' +
-                '<td class="px-6 py-2 pl-10 text-gray-600">↳ ' + cdisplayName + '</td>' +
-                '<td class="px-6 py-2 text-gray-500">' + ctypeLabel + '</td>' +
-                '<td class="px-6 py-2">' + clocationLabel + '</td>' +
-                '<td class="px-6 py-2 text-gray-500 text-sm">' + (child.slug || '-') + '</td>' +
-                '<td class="px-6 py-2">' + child.sort_order + '</td>' +
-                '<td class="px-6 py-2">' + cstatus + '</td>' +
-                '<td class="px-6 py-2">' +
-                    '<div class="flex items-center gap-2">' +
-                        '<a href="/admin/menu-items/' + child.id + '/edit" class="inline-flex items-center justify-center w-8 h-8 bg-blue-50 text-blue-600 rounded-lg hover:bg-blue-100 transition" title="Edit">' +
-                            '<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/></svg>' +
-                        '</a>' +
-                        '<a href="/admin/menu-items/' + child.id + '/toggle" class="inline-flex items-center justify-center w-8 h-8 bg-green-50 text-green-600 rounded-lg hover:bg-green-100 transition" title="' + ctoggleText + '">' +
-                            '<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/></svg>' +
-                        '</a>' +
-                        '<form action="/admin/menu-items/' + child.id + '" method="POST" onsubmit="return confirm(\'Delete this item?\')">' +
-                            '<input type="hidden" name="_token" value="{{ csrf_token() }}">' +
-                            '<input type="hidden" name="_method" value="DELETE">' +
-                            '<button type="submit" class="inline-flex items-center justify-center w-8 h-8 bg-red-50 text-red-600 rounded-lg hover:bg-red-100 transition" title="Delete">' +
-                                '<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>' +
-                            '</button>' +
-                        '</form>' +
-                    '</div>' +
-                '</td>' +
-            '</tr>';
-        });
-        
-        if (parentChildren.length === 0) {
-            html += '<tr><td colspan="7" class="px-6 py-2 pl-10 text-gray-400 text-sm italic">No sub-items</td></tr>';
-        }
+
+        html += renderTree(item.id, depth + 1);
     });
-    
-    tbody.innerHTML = html;
+
+    return html;
+}
+
+function renderMenuItems() {
+    var tbody = document.getElementById('menu-items-tbody');
+
+    if (allItems.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="7" class="px-6 py-4 text-center text-gray-500">No menu items found.</td></tr>';
+        return;
+    }
+
+    tbody.innerHTML = renderTree(null, 0);
 }
 
 renderMenuItems();

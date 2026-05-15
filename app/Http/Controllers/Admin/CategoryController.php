@@ -8,11 +8,22 @@ use Illuminate\Http\Request;
 
 class CategoryController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-        $categories = Category::withCount('products')
-            ->orderBy('name')
-            ->paginate(20);
+        $query = Category::withCount('products');
+
+        if ($request->search) {
+            $query->where('name', 'like', "%{$request->search}%");
+        }
+
+        if ($request->has_image === 'yes') {
+            $query->whereNotNull('image')->where('image', '!=', '');
+        } elseif ($request->has_image === 'no') {
+            $query->whereNull('image')->orWhere('image', '');
+        }
+
+        $perPage = min((int) $request->per_page, 200) ?: 20;
+        $categories = $query->orderBy('name')->paginate($perPage);
         
         return view('admin.categories.index', compact('categories'));
     }
@@ -79,7 +90,17 @@ class CategoryController extends Controller
     public function destroy(Category $category)
     {
         $category->delete();
-        return redirect()->route('admin.categories.index')
+        return redirect('/admin/categories')
             ->with('success', 'Category deleted.');
+    }
+
+    public function bulkDestroy(Request $request)
+    {
+        $ids = $request->category_ids;
+        if ($ids) {
+            Category::whereIn('id', $ids)->delete();
+        }
+        return redirect('/admin/categories')
+            ->with('success', count($ids ?? []) . ' categories deleted.');
     }
 }

@@ -51,6 +51,11 @@ Route::prefix('admin')->name('admin.')->group(function () {
         Route::get('products/{id}/edit', [ProductController::class, 'edit'])->name('products.edit');
         Route::put('products/{id}', [ProductController::class, 'update'])->name('products.update');
         Route::delete('products/{id}', [ProductController::class, 'destroy'])->name('products.destroy');
+        Route::post('products/bulk-delete', [ProductController::class, 'bulkDestroy'])->name('products.bulk-destroy');
+
+        Route::post('products/{product}/file-setup', [ProductController::class, 'saveFileSetup'])->name('products.file-setup');
+        Route::post('products/{product}/templates', [ProductController::class, 'addTemplate'])->name('products.templates.add');
+        Route::delete('products/templates/{template}', [ProductController::class, 'deleteTemplate'])->name('products.templates.delete');
 
         Route::post('products/{product}/pricing-options', [ProductController::class, 'addPricingOption'])->name('products.pricing.add');
         Route::put('pricing-options/{option}', [ProductController::class, 'updatePricingOption'])->name('products.pricing.update');
@@ -75,6 +80,7 @@ Route::prefix('admin')->name('admin.')->group(function () {
         Route::get('categories/{category}/edit', [CategoryController::class, 'edit'])->name('categories.edit');
         Route::put('categories/{category}', [CategoryController::class, 'update'])->name('categories.update');
         Route::delete('categories/{category}', [CategoryController::class, 'destroy'])->name('categories.destroy');
+        Route::post('categories/bulk-delete', [CategoryController::class, 'bulkDestroy'])->name('categories.bulk-destroy');
         
         Route::get('orders', [OrderController::class, 'index'])->name('orders');
         Route::get('orders/{id}', [OrderController::class, 'show'])->name('orders.show');
@@ -158,6 +164,8 @@ Route::prefix('admin')->name('admin.')->group(function () {
 
         // Software Development
         Route::get('software-development', [AdminSoftwareDevelopmentController::class, 'index'])->name('software-development');
+        Route::get('software-development/content', [AdminSoftwareDevelopmentController::class, 'editContent'])->name('software-development.content');
+        Route::put('software-development/content', [AdminSoftwareDevelopmentController::class, 'updateContent'])->name('software-development.content.update');
         Route::get('software-development/{softwareDevelopmentRequest}', [AdminSoftwareDevelopmentController::class, 'show'])->name('software-development.show');
         Route::post('software-development/{softwareDevelopmentRequest}/status', [AdminSoftwareDevelopmentController::class, 'updateStatus'])->name('software-development.status');
         Route::post('software-development/{softwareDevelopmentRequest}/notes', [AdminSoftwareDevelopmentController::class, 'updateNotes'])->name('software-development.notes');

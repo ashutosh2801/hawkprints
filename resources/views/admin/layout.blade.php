@@ -151,10 +151,25 @@
                         Testimonials
                     </a>
 
-                    <a href="/admin/software-development" class="flex items-center gap-2 px-4 py-2 rounded hover:bg-gray-700 @if(request()->is('admin/software-development*')) bg-gray-700 @endif">
-                        <svg class="w-5 h-5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4"/></svg>
-                        Software Dev
-                    </a>
+                    <div x-data="{ open: {{ request()->is('admin/software-development*') ? 'true' : 'false' }} }" class="space-y-1">
+                        <button @click="open = !open" class="w-full flex items-center justify-between gap-2 px-4 py-2 rounded hover:bg-gray-700 @if(request()->is('admin/software-development*')) bg-gray-700 @endif">
+                            <div class="flex items-center gap-2 min-w-0">
+                                <svg class="w-5 h-5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4"/></svg>
+                                <span class="truncate">Software Dev</span>
+                            </div>
+                            <svg class="w-4 h-4 shrink-0 transition-transform" :class="open ? 'rotate-180' : ''" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+                        </button>
+                        <div x-show="open" x-collapse class="ml-4 space-y-1 border-l border-gray-700 pl-4">
+                            <a href="/admin/software-development" class="flex items-center gap-2 px-4 py-1.5 rounded hover:bg-gray-700 @if(request()->routeIs('admin.software-development') && !request()->is('admin/software-development/content*')) bg-gray-700 @endif text-sm text-gray-300">
+                                <svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
+                                Requests
+                            </a>
+                            <a href="/admin/software-development/content" class="flex items-center gap-2 px-4 py-1.5 rounded hover:bg-gray-700 @if(request()->is('admin/software-development/content*')) bg-gray-700 @endif text-sm text-gray-300">
+                                <svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/></svg>
+                                Page Content
+                            </a>
+                        </div>
+                    </div>
 
                     <a href="/admin/sliders" class="flex items-center gap-2 px-4 py-2 rounded hover:bg-gray-700 @if(request()->is('admin/sliders*')) bg-gray-700 @endif">
                         <svg class="w-5 h-5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>

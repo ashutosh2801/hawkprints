@@ -5,14 +5,11 @@
         ->withCount('products')
         ->orderBy('name')
         ->get();
-    $headerMenuItems = \App\Models\MenuItem::where('location', 'header')
-        ->whereNull('parent_id')
+    $allHeaderItems = \App\Models\MenuItem::where('location', 'header')
         ->where('is_active', true)
         ->orderBy('sort_order')
-        ->with(['children' => function ($q) {
-            $q->where('is_active', true)->orderBy('sort_order');
-        }])
         ->get();
+    $headerMenuTree = $allHeaderItems->whereNull('parent_id');
 @endphp
 
 <header class="bg-white border-b border-gray-100" x-data="{ mobileOpen: false }" style="position: relative; z-index: 9999;">
@@ -171,32 +168,10 @@
                         </div>
                     </div>
 
-                    @if($headerMenuItems->count() > 0)
+                    @if($headerMenuTree->count() > 0)
                     <div class="w-px h-6 bg-gray-200"></div>
-                    @foreach($headerMenuItems as $item)
-                        @if($item->children->count() > 0)
-                        <div class="relative group">
-                            <button class="px-4 py-3.5 text-sm font-medium text-gray-700 hover:text-blue-700 transition-colors flex items-center gap-1.5">
-                                {{ $item->effective_name }}
-                                <svg class="w-3.5 h-3.5 transition-transform group-hover:rotate-180" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
-                                </svg>
-                            </button>
-                            <div class="absolute left-0 top-full pt-2 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200" style="z-index: 9999;">
-                                <div class="bg-white rounded-xl shadow-xl border border-gray-100 py-2 min-w-56">
-                                    @foreach($item->children as $child)
-                                    <a href="{{ $child->effective_slug }}" class="block px-4 py-2.5 text-gray-700 hover:bg-blue-50 hover:text-blue-700 transition-colors">
-                                        {{ $child->effective_name }}
-                                    </a>
-                                    @endforeach
-                                </div>
-                            </div>
-                        </div>
-                        @else
-                        <a href="{{ $item->effective_slug }}" class="px-4 py-3.5 text-sm font-medium text-gray-700 hover:text-blue-700 transition-colors whitespace-nowrap">
-                            {{ $item->effective_name }}
-                        </a>
-                        @endif
+                    @foreach($headerMenuTree as $item)
+                        @include('components.partials.menu-node', ['item' => $item, 'allItems' => $allHeaderItems, 'level' => 0])
                     @endforeach
                     @endif
                 </div>
@@ -250,25 +225,9 @@
                 </div>
             </div>
 
-            @if($headerMenuItems->count() > 0)
-                @foreach($headerMenuItems as $item)
-                    @if($item->children->count() > 0)
-                    <div x-data="{ open: false }">
-                        <button @click="open = !open" class="w-full flex items-center justify-between px-4 py-2.5 text-sm font-medium text-gray-700 hover:bg-gray-50 hover:text-blue-700 rounded-lg transition-colors">
-                            {{ $item->effective_name }}
-                            <svg class="w-3.5 h-3.5 transition-transform" :class="open ? 'rotate-180' : ''" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
-                            </svg>
-                        </button>
-                        <div x-show="open" x-cloak class="ml-4 border-l border-gray-200 pl-4">
-                            @foreach($item->children as $child)
-                            <a href="{{ $child->effective_slug }}" class="block px-4 py-2 text-sm text-gray-600 hover:text-blue-700">{{ $child->effective_name }}</a>
-                            @endforeach
-                        </div>
-                    </div>
-                    @else
-                    <a href="{{ $item->effective_slug }}" class="block px-4 py-2.5 text-sm text-gray-600 hover:bg-gray-50 hover:text-blue-700 rounded-lg transition-colors">{{ $item->effective_name }}</a>
-                    @endif
+            @if($headerMenuTree->count() > 0)
+                @foreach($headerMenuTree as $item)
+                    @include('components.partials.mobile-menu-node', ['item' => $item, 'allItems' => $allHeaderItems])
                 @endforeach
             @endif
 

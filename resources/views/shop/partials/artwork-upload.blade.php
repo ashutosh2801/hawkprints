@@ -2,7 +2,7 @@
 <div class="mt-6 p-4 border border-gray-200 rounded-lg">
     <h4 class="font-semibold text-gray-900 mb-3">Upload Your Artwork</h4>
     @if($product->artwork_instructions)
-    <p class="text-sm text-gray-600 mb-3">{{ $product->artwork_instructions }}</p>
+    <p class="text-sm text-gray-600 mb-3">{!! $product->artwork_instructions !!}</p>
     @endif
     <div id="artwork-drop-zone" class="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center hover:border-blue-500 hover:bg-blue-50 transition-colors cursor-pointer">
         <div id="artwork-drop-content">

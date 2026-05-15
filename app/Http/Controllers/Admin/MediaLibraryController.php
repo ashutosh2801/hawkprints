@@ -5,11 +5,19 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\ProductImage;
 use App\Models\Product;
+use App\Services\ImageStorageService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 
 class MediaLibraryController extends Controller
 {
+    protected $storageService;
+
+    public function __construct(ImageStorageService $storageService)
+    {
+        $this->storageService = $storageService;
+    }
+
     public function index(Request $request)
     {
         $query = ProductImage::orderBy('created_at', 'desc');
@@ -72,15 +80,15 @@ class MediaLibraryController extends Controller
         foreach ($request->file('files') as $file) {
             $filename = uniqid() . '.' . $file->getClientOriginalExtension();
 
-            $file->storeAs('products', $filename, 'public');
-            $file->storeAs('products/small', $filename, 'public');
-            $file->storeAs('products/medium', $filename, 'public');
+            $imageUrl = $this->storageService->uploadRaw($file, 'products', $filename);
+            $smallUrl = $this->storageService->uploadRaw($file, 'products/small', $filename);
+            $mediumUrl = $this->storageService->uploadRaw($file, 'products/medium', $filename);
 
             $image = ProductImage::create([
                 'product_id' => $productId,
-                'image' => '/storage/products/' . $filename,
-                'small' => '/storage/products/small/' . $filename,
-                'medium' => '/storage/products/medium/' . $filename,
+                'image' => $imageUrl,
+                'small' => $smallUrl,
+                'medium' => $mediumUrl,
                 'sort_order' => ++$maxOrder,
                 'is_primary' => $maxOrder === 1 && $productId,
                 'is_active' => true,
@@ -122,18 +130,13 @@ class MediaLibraryController extends Controller
 
             $oldPaths = [$image->image, $image->small, $image->medium];
 
-            $file->storeAs('products', $filename, 'public');
-            $file->storeAs('products/small', $filename, 'public');
-            $file->storeAs('products/medium', $filename, 'public');
-
-            $image->image = '/storage/products/' . $filename;
-            $image->small = '/storage/products/small/' . $filename;
-            $image->medium = '/storage/products/medium/' . $filename;
+            $image->image = $this->storageService->uploadRaw($file, 'products', $filename);
+            $image->small = $this->storageService->uploadRaw($file, 'products/small', $filename);
+            $image->medium = $this->storageService->uploadRaw($file, 'products/medium', $filename);
 
             foreach ($oldPaths as $path) {
                 if ($path) {
-                    $storagePath = str_replace('/storage/', '', $path);
-                    Storage::disk('public')->delete($storagePath);
+                    $this->storageService->delete($path);
                 }
             }
         }
@@ -164,8 +167,7 @@ class MediaLibraryController extends Controller
 
         foreach ($paths as $path) {
             if ($path) {
-                $storagePath = str_replace('/storage/', '', $path);
-                Storage::disk('public')->delete($storagePath);
+                $this->storageService->delete($path);
             }
         }
 

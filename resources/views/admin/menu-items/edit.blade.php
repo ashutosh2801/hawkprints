@@ -42,9 +42,21 @@
                     <label class="block text-sm font-medium text-gray-700 mb-1">Parent Menu Item</label>
                     <select name="parent_id" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500">
                         <option value="">-- None (Top Level) --</option>
-                        @php $parentItems = App\Models\MenuItem::whereNull('parent_id')->where('id', '!=', $menuItem->id)->orderBy('name')->get(); @endphp
-                        @foreach($parentItems as $parent)
-                        <option value="{{ $parent->id }}" {{ $menuItem->parent_id == $parent->id ? 'selected' : '' }}>{{ $parent->name }}</option>
+                        @php
+                            function renderEditParentOption($item, $allHeaderItems, $menuItem, $depth = 0) {
+                                if ($item->id === $menuItem->id) return;
+                                $prefix = str_repeat('↳ ', $depth);
+                                $selected = $menuItem->parent_id == $item->id ? 'selected' : '';
+                                echo '<option value="' . $item->id . '" ' . $selected . '>' . $prefix . e($item->name) . '</option>';
+                                $children = $allHeaderItems->where('parent_id', $item->id);
+                                foreach ($children as $child) {
+                                    renderEditParentOption($child, $allHeaderItems, $menuItem, $depth + 1);
+                                }
+                            }
+                            $topHeaderItems = $allHeaderItems->whereNull('parent_id');
+                        @endphp
+                        @foreach($topHeaderItems as $parent)
+                            @php renderEditParentOption($parent, $allHeaderItems, $menuItem, 0); @endphp
                         @endforeach
                     </select>
                 </div>

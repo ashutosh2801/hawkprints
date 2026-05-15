@@ -99,7 +99,7 @@ class ShopController extends Controller
 public function product($slug)
     {
         $product = Product::where('slug', $slug)
-            ->with(['variants', 'productImages', 'category', 'pricingOptions'])
+            ->with(['variants', 'productImages', 'category', 'pricingOptions', 'fileSetup', 'templates'])
             ->firstOrFail();
         
         if ($product->category_id) {

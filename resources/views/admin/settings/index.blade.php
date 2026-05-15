@@ -94,6 +94,68 @@
 
             <hr class="my-8">
 
+            <h2 class="text-xl font-bold mb-6">Image Storage</h2>
+
+            <div class="mb-6">
+                <label class="block text-sm font-medium text-gray-700 mb-2">Storage Driver</label>
+                <div class="flex gap-6">
+                    <label class="flex items-center gap-3 cursor-pointer">
+                        <input type="radio" name="image_storage" value="local" {{ $settings['image_storage'] === 'local' ? 'checked' : '' }}
+                            class="w-5 h-5 text-blue-600 border-gray-300 focus:ring-blue-500">
+                        <span class="font-medium">Local Storage</span>
+                    </label>
+                    <label class="flex items-center gap-3 cursor-pointer">
+                        <input type="radio" name="image_storage" value="s3" {{ $settings['image_storage'] === 's3' ? 'checked' : '' }}
+                            class="w-5 h-5 text-blue-600 border-gray-300 focus:ring-blue-500">
+                        <span class="font-medium">AWS S3</span>
+                    </label>
+                </div>
+            </div>
+
+            <div id="aws-settings" class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8" style="{{ $settings['image_storage'] === 's3' ? '' : 'display: none;' }}">
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">AWS Access Key ID</label>
+                    <input type="text" name="aws_access_key_id" value="{{ $settings['aws_access_key_id'] }}"
+                        class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                        placeholder="AKIA...">
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">AWS Secret Access Key</label>
+                    <input type="password" name="aws_secret_access_key"
+                        class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                        placeholder="Leave blank to keep current">
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">AWS Region</label>
+                    <input type="text" name="aws_default_region" value="{{ $settings['aws_default_region'] }}"
+                        class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                        placeholder="us-east-1">
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">S3 Bucket</label>
+                    <input type="text" name="aws_bucket" value="{{ $settings['aws_bucket'] }}"
+                        class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                        placeholder="my-bucket">
+                </div>
+                <div class="md:col-span-2">
+                    <label class="block text-sm font-medium text-gray-700 mb-1">S3 URL (optional)</label>
+                    <input type="text" name="aws_url" value="{{ $settings['aws_url'] }}"
+                        class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                        placeholder="https://my-bucket.s3.amazonaws.com">
+                    <small class="text-gray-500">If using a custom CDN or bucket URL, enter it here. Leave blank for default.</small>
+                </div>
+            </div>
+
+            <script>
+            document.querySelectorAll('input[name="image_storage"]').forEach(function(radio) {
+                radio.addEventListener('change', function() {
+                    document.getElementById('aws-settings').style.display = this.value === 's3' ? '' : 'none';
+                });
+            });
+            </script>
+
+            <hr class="my-8">
+
             <h2 class="text-xl font-bold mb-6">Social Media &amp; Analytics</h2>
 
             <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">

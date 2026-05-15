@@ -16,7 +16,7 @@ $autoPlayEnabled = !isset($auto_play) || $auto_play;
     <div class="flex transition-transform duration-700 ease-in-out" :style="'transform: translateX(-' + (activeSlide * 100) + '%)'">
         @foreach($sliders as $index => $slider)
             <div class="w-full flex-shrink-0">
-                <div class="relative h-[500px] md:h-[600px] lg:h-[700px]">
+                <div class="relative h-[320px] md:h-[384px] lg:h-[448px]">
                     <img src="{{ $slider->image }}" alt="{{ $slider->title }}" class="w-full h-full object-cover">
                     <div class="absolute inset-0 bg-gradient-to-r from-black/70 via-black/40 to-transparent"></div>
                     <div class="absolute inset-0 flex items-center">
