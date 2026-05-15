@@ -1,10 +1,10 @@
-<section class="py-20 bg-gradient-to-br from-gray-900 via-blue-900 to-gray-900 text-white relative overflow-hidden">
+<section class="py-12 bg-gradient-to-br from-gray-900 via-blue-900 to-gray-900 text-white relative overflow-hidden">
     <div class="absolute inset-0 opacity-20">
         <div class="absolute top-10 right-10 w-72 h-72 bg-blue-400 rounded-full filter blur-3xl"></div>
         <div class="absolute bottom-10 left-10 w-72 h-72 bg-purple-400 rounded-full filter blur-3xl"></div>
     </div>
     <div class="container mx-auto px-4 relative">
-        <div class="text-center mb-16 max-w-3xl mx-auto">
+        <div class="text-center mb-10 max-w-3xl mx-auto">
             <span class="inline-block px-4 py-1.5 bg-white/10 text-white text-sm font-medium rounded-full mb-4 border border-white/20">Why Choose Us</span>
             <h2 class="text-3xl md:text-4xl font-bold mb-6">{{ $heading ?? 'Five Rivers Print: Your printing partner' }}</h2>
             @if(!empty($text))

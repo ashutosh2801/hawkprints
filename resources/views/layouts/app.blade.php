@@ -24,21 +24,35 @@
     <link rel="icon" type="image/png" href="{{ $favicon }}">
     @endif
 
-    @php $ogImage = $logo ?: url('/images/og-default.jpg'); @endphp
+    @php
+        $ogDefaultImage = \App\Models\Setting::get('og_image', '');
+        $ogImage = $ogDefaultImage ?: ($logo ?: url('/images/og-default.jpg'));
+        $facebookAppId = \App\Models\Setting::get('facebook_app_id', '');
+        $twitterHandle = \App\Models\Setting::get('twitter_handle', '');
+    @endphp
     <!-- Open Graph -->
     <meta property="og:site_name" content="{{ $companyName }}">
     <meta property="og:title" content="@yield('og_title', $seoTitle)">
     <meta property="og:description" content="@yield('og_description', $seoDescription)">
     <meta property="og:url" content="@yield('og_url', url()->current())">
     <meta property="og:image" content="@yield('og_image', $ogImage)">
+    <meta property="og:image:alt" content="@yield('og_image_alt', $companyName)">
     <meta property="og:type" content="@yield('og_type', 'website')">
     <meta property="og:locale" content="en_CA">
+    @if($facebookAppId)
+    <meta property="fb:app_id" content="{{ $facebookAppId }}">
+    @endif
 
     <!-- Twitter Card -->
     <meta name="twitter:card" content="summary_large_image">
     <meta name="twitter:title" content="@yield('og_title', $seoTitle)">
     <meta name="twitter:description" content="@yield('og_description', $seoDescription)">
     <meta name="twitter:image" content="@yield('og_image', $ogImage)">
+    <meta name="twitter:image:alt" content="@yield('og_image_alt', $companyName)">
+    @if($twitterHandle)
+    <meta name="twitter:site" content="{{ $twitterHandle }}">
+    <meta name="twitter:creator" content="{{ $twitterHandle }}">
+    @endif
 
     <!-- JSON-LD Organization -->
     <script type="application/ld+json">
@@ -82,6 +96,29 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/intl-tel-input@24.5.0/build/css/intlTelInput.css">
 
     <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+    tailwind.config = {
+        theme: {
+            extend: {
+                colors: {
+                    blue: {
+                        50: '#eef2ff',
+                        100: '#dce3fa',
+                        200: '#bac8f5',
+                        300: '#93a8ee',
+                        400: '#6b84e5',
+                        500: '#4169E1',
+                        600: '#3351c8',
+                        700: '#2a41a4',
+                        800: '#233584',
+                        900: '#1c2968',
+                        950: '#141d4a',
+                    }
+                }
+            }
+        }
+    }
+    </script>
     <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.14.8/dist/cdn.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/intl-tel-input@24.5.0/build/js/intlTelInput.min.js"></script>
 </head>

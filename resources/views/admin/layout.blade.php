@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="csrf-token" content="{{ csrf_token() }}">
-    <title>@yield('title', 'Admin') - GTA Coach</title>
+    <title>@yield('title', 'Admin') - Five Rivers Print</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>.ql-editor{min-height:150px}.ql-container{font-size:14px}</style>
 </head>
@@ -16,7 +16,7 @@
                 <button @click="sidebarOpen = !sidebarOpen" class="p-2 text-gray-600 hover:text-gray-900 hover:bg-gray-100 rounded-lg">
                     <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/></svg>
                 </button>
-                <a href="/admin" class="text-lg font-bold text-gray-800">GTA<span class="text-blue-500">Coach</span> <span class="text-xs text-gray-400 font-normal">Admin</span></a>
+                <a href="/admin/dashboard" class="text-lg font-bold text-gray-800">Five <span class="text-blue-500">Rivers Print</span> <span class="text-xs text-gray-400 font-normal">Admin</span></a>
             </div>
             <div class="flex items-center gap-1">
                 <!-- Newsletter -->
@@ -104,7 +104,7 @@
             <!-- Sidebar -->
             <aside :class="sidebarOpen ? 'w-64' : 'w-0'" class="bg-gray-900 text-white fixed left-0 top-16 h-full transition-all duration-300 overflow-hidden z-40">
                 <nav class="p-4 space-y-1 w-64">
-                    <a href="/admin" class="flex items-center gap-2 px-4 py-2 rounded hover:bg-gray-700 @if(request()->is('admin') && !request()->is('admin/dashboard')) bg-gray-700 @endif">
+                    <a href="/admin/dashboard" class="flex items-center gap-2 px-4 py-2 rounded hover:bg-gray-700 @if(request()->is('admin') && !request()->is('admin/dashboard')) bg-gray-700 @endif">
                         <svg class="w-5 h-5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/></svg>
                         Dashboard
                     </a>

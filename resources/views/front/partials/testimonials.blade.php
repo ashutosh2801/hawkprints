@@ -1,6 +1,6 @@
-<section class="py-20 bg-white">
+<section class="py-12 bg-white">
     <div class="container mx-auto px-4">
-        <div class="text-center mb-14">
+        <div class="text-center mb-10">
             <span class="inline-block px-4 py-1.5 bg-blue-50 text-blue-700 text-sm font-medium rounded-full mb-4">Testimonials</span>
             <h2 class="text-3xl md:text-4xl font-bold text-gray-900">What our clients say</h2>
             <p class="mt-4 text-lg text-gray-500 max-w-2xl mx-auto">Real feedback from real customers who trust us with their printing needs</p>

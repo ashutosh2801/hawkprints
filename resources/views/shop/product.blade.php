@@ -5,6 +5,7 @@
 @section('og_title', ($product->meta_title ?: $product->name) . ' - Five Rivers Print')
 @section('og_description', $product->short_description ?? $product->meta_description)
 @section('og_image', $product->primary_image)
+@section('og_image_alt', $product->name . ' - Print Product')
 @section('og_type', 'product')
 @section('og_url', url()->current())
 

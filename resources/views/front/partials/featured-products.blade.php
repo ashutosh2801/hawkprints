@@ -1,6 +1,6 @@
-<section class="py-20 bg-gray-50">
+<section class="py-12 bg-gray-50">
     <div class="container mx-auto px-4">
-        <div class="text-center mb-14">
+        <div class="text-center mb-10">
             <span class="inline-block px-4 py-1.5 bg-blue-50 text-blue-700 text-sm font-medium rounded-full mb-4">Curated Selection</span>
             <h2 class="text-3xl md:text-4xl font-bold text-gray-900">Featured products</h2>
             <p class="mt-4 text-lg text-gray-500 max-w-2xl mx-auto">Handpicked products that showcase our quality craftsmanship</p>
@@ -62,13 +62,13 @@
                     </a>
                     <div class="px-5 pb-5">
                         @if($product->pricingOptions->count() > 0)
-                            <a href="/shop/product/{{ $product->slug }}" class="block w-full py-2.5 bg-gray-900 hover:bg-blue-700 text-white text-center rounded-xl font-medium transition-colors duration-300 text-sm">
+                            <a href="/shop/product/{{ $product->slug }}" class="block w-full py-2.5 bg-blue-700 hover:bg-blue-800 text-white text-center rounded-xl font-medium transition-colors duration-300 text-sm">
                                 Select Options
                             </a>
                         @else
                             <form action="/cart/add/{{ $product->slug }}" method="POST">
                                 @csrf
-                                <button type="submit" class="w-full py-2.5 bg-gray-900 hover:bg-blue-700 text-white rounded-xl font-medium transition-colors duration-300 text-sm">
+                                <button type="submit" class="w-full py-2.5 bg-blue-700 hover:bg-blue-800 text-white rounded-xl font-medium transition-colors duration-300 text-sm">
                                     Add to Cart
                                 </button>
                             </form>

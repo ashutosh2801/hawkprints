@@ -27,6 +27,9 @@ class SettingsController extends Controller
             'seo_title' => Setting::get('seo_title', ''),
             'seo_description' => Setting::get('seo_description', ''),
             'seo_keywords' => Setting::get('seo_keywords', ''),
+            'og_image' => Setting::get('og_image', ''),
+            'facebook_app_id' => Setting::get('facebook_app_id', ''),
+            'twitter_handle' => Setting::get('twitter_handle', ''),
             'social_facebook' => Setting::get('social_facebook', ''),
             'social_twitter' => Setting::get('social_twitter', ''),
             'social_instagram' => Setting::get('social_instagram', ''),
@@ -53,6 +56,7 @@ class SettingsController extends Controller
             'company_name', 'company_email', 'company_phone', 'company_address',
             'tax_rate', 'shipping_cost', 'logo', 'favicon',
             'seo_title', 'seo_description', 'seo_keywords',
+            'og_image', 'facebook_app_id', 'twitter_handle',
             'social_facebook', 'social_twitter', 'social_instagram', 'social_linkedin',
             'tracking_code',
             'image_storage', 'aws_access_key_id', 'aws_secret_access_key',
@@ -67,7 +71,7 @@ class SettingsController extends Controller
                 if (empty($value)) {
                     $value = Setting::get($setting, '');
                 }
-            } elseif (in_array($setting, ['logo', 'favicon'])) {
+            } elseif (in_array($setting, ['logo', 'favicon', 'og_image'])) {
                 if ($request->input($setting . '_url')) {
                     $value = $request->input($setting . '_url');
                 } else {

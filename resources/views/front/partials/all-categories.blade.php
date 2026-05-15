@@ -1,6 +1,6 @@
-<section class="py-20 bg-gray-50">
+<section class="py-12 bg-gray-50">
     <div class="container mx-auto px-4">
-        <div class="text-center mb-14">
+        <div class="text-center mb-10">
             <span class="inline-block px-4 py-1.5 bg-blue-50 text-blue-700 text-sm font-medium rounded-full mb-4">Full Catalog</span>
             <h2 class="text-3xl md:text-4xl font-bold text-gray-900">{{ $heading ?? 'Explore all categories' }}</h2>
             <p class="mt-4 text-lg text-gray-500 max-w-2xl mx-auto">Everything you need, all in one place</p>

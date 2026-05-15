@@ -83,6 +83,48 @@
                 </div>
             </div>
             
+            <hr class="my-8">
+
+            <h2 class="text-xl font-bold mb-6">Open Graph / Social Sharing</h2>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Default OG Image (1200x630px)</label>
+                    <div class="mt-1 flex items-start gap-4">
+                        <div id="og-image-preview" class="h-24 w-48 border rounded overflow-hidden flex items-center justify-center bg-gray-50 {{ !$settings['og_image'] ? 'p-4' : '' }}">
+                            @if($settings['og_image'])
+                            <img src="{{ $settings['og_image'] }}" alt="OG Image" class="h-full w-full object-cover">
+                            @else
+                            <span class="text-gray-400 text-xs text-center">No OG image set<br><small>1200x630px recommended</small></span>
+                            @endif
+                        </div>
+                        <div class="space-y-2">
+                            <button type="button" onclick="selectFromLibrary('og-image')" class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 text-sm">
+                                Choose from Library
+                            </button>
+                            <input type="hidden" name="og_image_url" id="og-image-url" value="{{ $settings['og_image'] }}">
+                        </div>
+                    </div>
+                    <small class="text-gray-500">Used when pages don't specify their own image. 1200x630px recommended.</small>
+                </div>
+                <div class="md:col-span-2 grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Facebook App ID</label>
+                        <input type="text" name="facebook_app_id" value="{{ $settings['facebook_app_id'] ?? '' }}"
+                            class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                            placeholder="1234567890">
+                        <small class="text-gray-500">Used for Facebook sharing insights</small>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Twitter/X Handle</label>
+                        <input type="text" name="twitter_handle" value="{{ $settings['twitter_handle'] ?? '' }}"
+                            class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                            placeholder="@yourhandle">
+                        <small class="text-gray-500">Twitter card attribution (e.g. @fiveriversprint)</small>
+                    </div>
+                </div>
+            </div>
+
             <div class="bg-gray-50 p-6 rounded-lg mb-8">
                 <h3 class="text-lg font-bold mb-2">Sitemap</h3>
                 <p class="text-sm text-gray-600 mb-4">Generate the sitemap.xml file for search engines. Visit <a href="{{ url('/sitemap.xml') }}" class="text-blue-600 hover:underline" target="_blank">{{ url('/sitemap.xml') }}</a> to view it.</p>
@@ -339,6 +381,7 @@ function selectFromLibrary(prefix) {
                 var suffix = '';
                 if (prefix === 'logo') suffix = 'Logo" class="h-16 w-auto object-contain';
                 if (prefix === 'favicon') suffix = 'Favicon" class="h-10 w-10 object-contain';
+                if (prefix === 'og-image') suffix = 'OG Image" class="h-full w-full object-cover';
                 document.getElementById(prefix + '-preview').innerHTML = '<img src="' + img.url + '" alt="' + suffix + '">';
             }
         }

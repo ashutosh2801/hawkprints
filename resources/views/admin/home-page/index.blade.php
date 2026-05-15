@@ -259,12 +259,29 @@ function openEditModal(id, key) {
     } else if (key === 'clients') {
         title.textContent = 'Configure Clients Section';
         const heading = getSetting('heading', id, 'Trusted by Leading Brands');
+        const clientsList = getSetting('clients', id, []);
         html = `
-            <div>
-                <label class="block text-sm font-medium text-gray-700 mb-1">Section Heading</label>
-                <input type="text" id="section-heading" value="${heading}" class="w-full px-4 py-2 border rounded-lg">
+            <div class="space-y-4">
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Section Heading</label>
+                    <input type="text" id="section-heading" value="${heading}" class="w-full px-4 py-2 border rounded-lg">
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Client Logos</label>
+                    <p class="text-sm text-gray-500 mb-3">Add client/partner logos to display in the scrolling carousel.</p>
+                    <div id="clients-list" class="space-y-2">
+                        ${clientsList.length === 0 ? '<p class="text-sm text-gray-400 italic p-3">No clients added yet. Click "Add Client" below.</p>' : ''}
+                    </div>
+                    <button type="button" onclick="addClientRow()" class="mt-3 px-4 py-2 bg-gray-100 text-gray-700 text-sm rounded-lg hover:bg-gray-200 border border-gray-300">
+                        + Add Client
+                    </button>
+                </div>
             </div>
         `;
+        // Render existing clients after modal opens
+        setTimeout(() => {
+            clientsList.forEach((c, i) => addClientRow(c.name, c.image, i));
+        }, 50);
     } else if (key === 'all-categories') {
         title.textContent = 'Configure All Categories';
         const heading = getSetting('heading', id, 'All Categories');
@@ -329,6 +346,51 @@ function getSetting(key, sectionId, defaultVal) {
     }
 }
 
+let clientRowCounter = 0;
+
+function addClientRow(name, image, index) {
+    const list = document.getElementById('clients-list');
+    const emptyMsg = list.querySelector('p.text-gray-400');
+    if (emptyMsg) emptyMsg.remove();
+    clientRowCounter++;
+    const id = 'client-' + clientRowCounter;
+    const div = document.createElement('div');
+    div.className = 'client-row flex items-center gap-3 p-3 bg-gray-50 rounded-lg border border-gray-200';
+    div.innerHTML = `
+        <div class="flex-shrink-0 w-14 h-14 bg-white rounded-lg border border-gray-200 overflow-hidden flex items-center justify-center preview-slot" data-row-id="${id}">
+            ${image ? `<img src="${image}" class="w-full h-full object-contain">` : '<svg class="w-6 h-6 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>'}
+        </div>
+        <div class="flex-1 min-w-0">
+            <input type="text" class="client-name w-full px-3 py-1.5 border border-gray-300 rounded-lg text-sm" placeholder="Client name" value="${name || ''}">
+            <input type="hidden" class="client-image-url" value="${image || ''}">
+        </div>
+        <button type="button" onclick="openMediaLibraryForClient('${id}')" class="px-3 py-1.5 bg-blue-600 text-white text-xs rounded hover:bg-blue-700 flex-shrink-0" title="Choose image">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
+        </button>
+        <button type="button" onclick="this.closest('.client-row').remove()" class="p-1.5 text-red-500 hover:bg-red-50 rounded flex-shrink-0" title="Remove">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
+        </button>
+    `;
+    list.appendChild(div);
+}
+
+function openMediaLibraryForClient(rowId) {
+    openMediaLibrary({
+        mode: 'single',
+        callback: function(ids) {
+            const img = mediaLibraryState.allImages.find(i => i.id === ids[0]);
+            if (img) {
+                const preview = document.querySelector(`.preview-slot[data-row-id="${rowId}"]`);
+                if (preview) {
+                    preview.innerHTML = `<img src="${img.url}" class="w-full h-full object-contain">`;
+                }
+                const hiddenInput = preview?.closest('.client-row')?.querySelector('.client-image-url');
+                if (hiddenInput) hiddenInput.value = img.url;
+            }
+        }
+    });
+}
+
 function saveSectionSettings() {
     const settings = {};
 
@@ -359,6 +421,14 @@ function saveSectionSettings() {
     } else if (currentSectionKey === 'clients') {
         const heading = document.getElementById('section-heading')?.value;
         if (heading) settings.heading = heading;
+        const rows = document.querySelectorAll('#clients-list .client-row');
+        const clients = [];
+        rows.forEach(row => {
+            const name = row.querySelector('.client-name')?.value?.trim();
+            const image = row.querySelector('.client-image-url')?.value?.trim();
+            if (name || image) clients.push({ name: name || '', image: image || '' });
+        });
+        settings.clients = clients;
     } else if (currentSectionKey === 'hero') {
         settings.auto_play = document.getElementById('section-auto-play')?.checked ?? true;
     }
@@ -433,4 +503,6 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 });
 </script>
+
+@include('admin.partials.media-library')
 @endsection
