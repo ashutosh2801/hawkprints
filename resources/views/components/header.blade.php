@@ -1,15 +1,14 @@
 @php
     $companyName = \App\Models\Setting::get('company_name', 'Five Rivers Print');
     $logo = \App\Models\Setting::get('logo');
-    $headerCategories = \App\Models\Category::where('is_active', true)
-        ->withCount('products')
-        ->orderBy('name')
-        ->get();
     $allHeaderItems = \App\Models\MenuItem::where('location', 'header')
         ->where('is_active', true)
         ->orderBy('sort_order')
         ->get();
     $headerMenuTree = $allHeaderItems->whereNull('parent_id');
+    $shopProducts = \App\Models\Product::where('is_active', true)
+        ->orderBy('name')
+        ->get(['id', 'name', 'slug']);
 @endphp
 
 <header class="bg-white border-b border-gray-100" x-data="{ mobileOpen: false }" style="position: relative; z-index: 9999;">
@@ -140,24 +139,23 @@
                                 <div class="border-t border-gray-100 pt-0">
                                     @php
                                         $grouped = [];
-                                        foreach($headerCategories as $cat) {
-                                            $letter = strtoupper(substr($cat->name, 0, 1));
+                                        foreach($shopProducts as $p) {
+                                            $letter = strtoupper(substr($p->name, 0, 1));
                                             if (!isset($grouped[$letter])) $grouped[$letter] = [];
-                                            $grouped[$letter][] = $cat;
+                                            $grouped[$letter][] = $p;
                                         }
                                         ksort($grouped);
                                     @endphp
-                                    @foreach($grouped as $letter => $cats)
+                                    @foreach($grouped as $letter => $prods)
                                     <div class="mb-5 last:mb-0">
                                         <div class="flex items-center gap-3 mb-2">
                                             <div class="w-7 h-7 bg-blue-700 text-white rounded-full flex items-center justify-center text-sm font-bold">{{ $letter }}</div>
                                             <div class="flex-1 border-t border-gray-200"></div>
                                         </div>
                                         <div class="grid grid-cols-4 gap-2">
-                                            @foreach($cats as $cat)
-                                            <a href="/shop/category/{{ $cat->slug }}" class="px-3 py-2 text-sm text-gray-700 hover:text-blue-700 hover:bg-blue-50 rounded-lg transition-colors">
-                                                <div class="font-medium">{{ $cat->name }}</div>
-                                                <div class="text-xs text-gray-400">{{ $cat->products_count }} items</div>
+                                            @foreach($prods as $p)
+                                            <a href="/shop/product/{{ $p->slug }}" class="px-3 py-2 text-sm text-gray-700 hover:text-blue-700 hover:bg-blue-50 rounded-lg transition-colors truncate">
+                                                {{ $p->name }}
                                             </a>
                                             @endforeach
                                         </div>
@@ -169,7 +167,7 @@
                     </div>
 
                     @if($headerMenuTree->count() > 0)
-                    <div class="w-px h-6 bg-gray-200"></div>
+                    <div class="w-px h-6 bg-gray-200 mx-2"></div>
                     @foreach($headerMenuTree as $item)
                         @include('components.partials.menu-node', ['item' => $item, 'allItems' => $allHeaderItems, 'level' => 0])
                     @endforeach
@@ -202,22 +200,22 @@
                 <div x-show="shopOpen" x-cloak class="ml-4 space-y-1 border-l border-gray-200 pl-4">
                     @php
                         $mobileGrouped = [];
-                        foreach($headerCategories as $cat) {
-                            $letter = strtoupper(substr($cat->name, 0, 1));
+                        foreach($shopProducts as $p) {
+                            $letter = strtoupper(substr($p->name, 0, 1));
                             if (!isset($mobileGrouped[$letter])) $mobileGrouped[$letter] = [];
-                            $mobileGrouped[$letter][] = $cat;
+                            $mobileGrouped[$letter][] = $p;
                         }
                         ksort($mobileGrouped);
                     @endphp
-                    @foreach($mobileGrouped as $letter => $cats)
+                    @foreach($mobileGrouped as $letter => $prods)
                     <div class="pt-2">
                         <div class="flex items-center gap-2 px-4 mb-1">
                             <div class="w-6 h-6 bg-blue-700 text-white rounded-full flex items-center justify-center text-xs font-bold">{{ $letter }}</div>
                             <div class="flex-1 border-t border-gray-200"></div>
                         </div>
-                        @foreach($cats as $cat)
-                        <a href="/shop/category/{{ $cat->slug }}" class="block px-4 py-1.5 text-sm text-gray-600 hover:text-blue-700">
-                            {{ $cat->name }} <span class="text-gray-400 text-xs">({{ $cat->products_count }})</span>
+                        @foreach($prods as $p)
+                        <a href="/shop/product/{{ $p->slug }}" class="block px-4 py-1.5 text-sm text-gray-600 hover:text-blue-700">
+                            {{ $p->name }}
                         </a>
                         @endforeach
                     </div>

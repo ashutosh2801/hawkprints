@@ -287,7 +287,7 @@ public function edit($id)
                     $conditions[] = [
                         'when_choice_index' => intval($cond['when_choice_index']),
                         'affects_option_type' => $cond['affects_option_type'],
-                        'hide_choices' => isset($cond['hide_choices_check']) ? array_filter(array_map('intval', $cond['hide_choices_check'])) : [],
+                        'hide_choices' => isset($cond['hide_choices_check']) ? array_map('intval', $cond['hide_choices_check']) : [],
                         'price_modifiers' => $priceModifiers,
                     ];
                 }

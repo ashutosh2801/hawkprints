@@ -226,7 +226,7 @@
                                         </div>
                                         <div class="mb-3">
                                             <label class="block text-xs text-gray-700 font-medium mb-1">Override prices (check & set new price):</label>
-                                            <div class="space-y-1">
+                                            <div class="space-y-1 price-overrides">
                                                 @foreach($affectChoices as $ai => $ac)
                                                 @php
                                                     $hasPriceOverride = isset($existingPriceModifiers[$ai]) || isset($existingPriceModifiers[strval($ai)]);
@@ -504,6 +504,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 details.classList.remove('hidden');
             }
             attachPriceOverrideListeners(row);
+            attachHideChoiceListeners(row);
         }
 
         if (affectsSelect) {
@@ -623,6 +624,7 @@ function loadAffectedOptions(row, optionType, optionId) {
             });
 
             attachPriceOverrideListeners(row);
+            attachHideChoiceListeners(row);
         })
         .catch(err => {
             console.error('Fetch error:', err);
@@ -642,6 +644,27 @@ function attachPriceOverrideListeners(row) {
                 if (!this.checked) input.value = '';
             }
         });
+    });
+}
+
+function attachHideChoiceListeners(row) {
+    const hideLabels = row.querySelectorAll('.hide-checkboxes > label');
+    const priceRows = row.querySelectorAll('.price-overrides > div');
+
+    hideLabels.forEach((label, idx) => {
+        const checkbox = label.querySelector('input[type="checkbox"]');
+        if (!checkbox) return;
+
+        const toggle = function() {
+            label.classList.toggle('text-gray-300', checkbox.checked);
+            label.classList.toggle('line-through', checkbox.checked);
+            if (priceRows[idx]) {
+                priceRows[idx].classList.toggle('hidden', checkbox.checked);
+            }
+        };
+
+        toggle();
+        checkbox.addEventListener('change', toggle);
     });
 }
 

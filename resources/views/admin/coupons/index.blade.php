@@ -3,10 +3,10 @@
 @section('page-title', 'Coupons - Five Rivers Print')
 
 @section('content')
-<div class="max-w-6xl mx-auto">
-    <div class="flex justify-between items-center mb-6">
+<div class="max-w-7xl mx-auto">
+    <!-- <div class="flex justify-between items-center mb-6">
         <h1 class="text-2xl font-bold">Coupons</h1>
-    </div>
+    </div> -->
 
     @if(session('success'))
     <div class="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded mb-4">

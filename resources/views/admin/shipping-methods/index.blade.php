@@ -3,10 +3,10 @@
 @section('page-title', 'Shipping Methods - Five Rivers Print')
 
 @section('content')
-<div class="max-w-6xl mx-auto">
-    <div class="flex justify-between items-center mb-6">
+<div class="max-w-7xl mx-auto">
+    <!-- <div class="flex justify-between items-center mb-6">
         <h1 class="text-2xl font-bold">Shipping Methods</h1>
-    </div>
+    </div> -->
 
     @if(session('success'))
     <div class="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded mb-4">
@@ -16,7 +16,7 @@
 
     <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
         <div class="lg:col-span-2">
-            <div class="bg-white rounded-lg shadow overflow-hidden">
+            <div class="bg-white rounded-lg shadow overflow-x-auto">
                 <table class="min-w-full divide-y divide-gray-200">
                     <thead class="bg-gray-50">
                         <tr>
@@ -32,7 +32,7 @@
                         @forelse($methods as $method)
                         <tr>
                             <td class="px-6 py-4 whitespace-nowrap font-medium">{{ $method->name }}</td>
-                            <td class="px-6 py-4 whitespace-nowrap text-gray-500">{{ $method->description ?? '-' }}</td>
+                            <td class="px-6 py-4 text-gray-500 max-w-xs truncate">{{ $method->description ?? '-' }}</td>
                             <td class="px-6 py-4 whitespace-nowrap font-medium">${{ number_format($method->price, 2) }}</td>
                             <td class="px-6 py-4 whitespace-nowrap text-gray-500">{{ $method->estimated_days ?? '-' }}</td>
                             <td class="px-6 py-4 whitespace-nowrap">

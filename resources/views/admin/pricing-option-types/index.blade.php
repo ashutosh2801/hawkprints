@@ -3,9 +3,9 @@
 @section('page-title', 'Pricing Option Types')
 
 @section('content')
-<div class="p-6">
+<div class="max-w-7xl mx-auto">
     <div class="mb-6 flex justify-between items-center">
-        <h1 class="text-2xl font-bold">Pricing Option Types</h1>
+        <!-- <h1 class="text-2xl font-bold">Pricing Option Types</h1> -->
         <form action="{{ route('admin.pricing-option-types.store') }}" method="POST" class="flex gap-2">
             @csrf
             <input type="text" name="name" placeholder="Type name (e.g., Quantity, Size)" required 
