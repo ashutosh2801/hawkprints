@@ -5,6 +5,8 @@ namespace App\Http\Controllers\Contact;
 use App\Http\Controllers\Controller;
 use App\Models\AdminNotification;
 use App\Models\ContactInquiry;
+use App\Models\Setting;
+use App\Services\EmailService;
 use Illuminate\Http\Request;
 
 class ContactController extends Controller
@@ -27,6 +29,28 @@ class ContactController extends Controller
             'message' => $inquiry->message,
             'contact_inquiry_id' => $inquiry->id,
         ]);
+
+        $emailService = new EmailService();
+
+        $inquiryData = [
+            'customer_name' => $inquiry->name,
+            'customer_email' => $inquiry->email,
+            'customer_phone' => $inquiry->phone ?? 'N/A',
+            'inquiry_message' => nl2br(e($inquiry->message)),
+        ];
+
+        try {
+            $emailService->sendTemplateEmail('contact_inquiry_confirmation', $inquiry->email, $inquiryData);
+        } catch (\Exception $e) {
+            \Log::error('Contact confirmation email failed: ' . $e->getMessage());
+        }
+
+        try {
+            $companyEmail = Setting::get('company_email', 'info@fiveriversprint.ca');
+            $emailService->sendTemplateEmail('contact_inquiry_admin_notification', $companyEmail, $inquiryData);
+        } catch (\Exception $e) {
+            \Log::error('Contact admin email failed: ' . $e->getMessage());
+        }
 
         return back()->with('success', 'Thank you! Your message has been received. We will get back to you shortly.');
     }

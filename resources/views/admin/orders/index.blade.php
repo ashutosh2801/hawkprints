@@ -8,10 +8,11 @@
         <input type="text" name="search" value="{{ request('search') }}" placeholder="Search orders..." class="px-4 py-2 border border-gray-300 rounded-lg">
         <select name="status" class="px-4 py-2 border border-gray-300 rounded-lg">
             <option value="">All Status</option>
-            <option value="pending" {{ request('status') == 'pending' ? 'selected' : '' }}>Pending</option>
-            <option value="processing" {{ request('status') == 'processing' ? 'selected' : '' }}>Processing</option>
-            <option value="completed" {{ request('status') == 'completed' ? 'selected' : '' }}>Completed</option>
-            <option value="cancelled" {{ request('status') == 'cancelled' ? 'selected' : '' }}>Cancelled</option>
+                <option value="pending" {{ request('status') == 'pending' ? 'selected' : '' }}>Pending</option>
+                <option value="processing" {{ request('status') == 'processing' ? 'selected' : '' }}>Processing</option>
+                <option value="shipped" {{ request('status') == 'shipped' ? 'selected' : '' }}>Shipped</option>
+                <option value="delivered" {{ request('status') == 'delivered' ? 'selected' : '' }}>Delivered</option>
+                <option value="cancelled" {{ request('status') == 'cancelled' ? 'selected' : '' }}>Cancelled</option>
         </select>
         <button type="submit" class="px-4 py-2 bg-gray-800 text-white rounded-lg hover:bg-gray-700">Filter</button>
     </form>
@@ -39,7 +40,7 @@
                 </td>
                 <td class="px-6 py-4 font-medium">${{ number_format($order->total, 2) }}</td>
                 <td class="px-6 py-4">
-                    @php $statusClass = ['pending' => 'yellow', 'processing' => 'blue', 'completed' => 'green', 'cancelled' => 'red']; @endphp
+                    @php $statusClass = ['pending' => 'yellow', 'processing' => 'blue', 'shipped' => 'indigo', 'delivered' => 'green', 'cancelled' => 'red']; @endphp
                     <span class="inline-flex items-center gap-1 px-2 py-0.5 bg-{{ $statusClass[$order->status] ?? 'gray' }}-50 text-{{ $statusClass[$order->status] ?? 'gray' }}-700 text-xs font-medium rounded-full capitalize">{{ $order->status }}</span>
                 </td>
                 <td class="px-6 py-4 text-gray-600">{{ $order->created_at->format('M d, Y') }}</td>

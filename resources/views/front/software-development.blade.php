@@ -606,8 +606,6 @@
 
 <!-- CTA -->
 <section class="py-24 bg-gradient-to-br from-gray-900 via-[#0b1120] to-indigo-950 text-white relative overflow-hidden section-block">
-    <div class="floating-shape w-[600px] h-[600px] bg-indigo-500 -top-32 -right-32 opacity-[0.06]"></div>
-    <div class="floating-shape w-[400px] h-[400px] bg-blue-500 bottom-20 left-1/4 opacity-[0.06]"></div>
     <div class="container mx-auto px-4 relative">
         <div class="max-w-3xl mx-auto text-center reveal-scale">
             <h2 class="text-4xl md:text-5xl font-bold mb-6 leading-[1.1]">Ready to Build Your Dream Software?</h2>

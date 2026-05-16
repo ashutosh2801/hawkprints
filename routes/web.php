@@ -83,8 +83,10 @@ Route::prefix('admin')->name('admin.')->group(function () {
         Route::post('categories/bulk-delete', [CategoryController::class, 'bulkDestroy'])->name('categories.bulk-destroy');
         
         Route::get('orders', [OrderController::class, 'index'])->name('orders');
-        Route::get('orders/{id}', [OrderController::class, 'show'])->name('orders.show');
-        Route::put('orders/{id}/status', [OrderController::class, 'updateStatus'])->name('orders.updateStatus');
+        Route::get('orders/{order}', [OrderController::class, 'show'])->name('orders.show');
+        Route::put('orders/{order}/status', [OrderController::class, 'updateStatus'])->name('orders.updateStatus');
+        Route::get('orders/{order}/invoice', [OrderController::class, 'downloadInvoice'])->name('orders.invoice');
+        Route::post('orders/{order}/send-invoice', [OrderController::class, 'sendInvoice'])->name('orders.send-invoice');
         
         Route::get('testimonials', [TestimonialController::class, 'index'])->name('testimonials');
         Route::get('testimonials/create', [TestimonialController::class, 'create'])->name('testimonials.create');
@@ -132,12 +134,12 @@ Route::prefix('admin')->name('admin.')->group(function () {
         Route::post('contact-inquiries/{contactInquiry}/reply', [ContactInquiryController::class, 'reply'])->name('contact-inquiries.reply');
         Route::delete('contact-inquiries/{contactInquiry}', [ContactInquiryController::class, 'destroy'])->name('contact-inquiries.destroy');
         
-        Route::get('email-templates', [EmailTemplateController::class, 'index'])->name('email-templates');
+        Route::get('email-templates', [EmailTemplateController::class, 'index'])->name('email-templates.index');
         Route::get('email-templates/create', [EmailTemplateController::class, 'create'])->name('email-templates.create');
         Route::post('email-templates', [EmailTemplateController::class, 'store'])->name('email-templates.store');
-        Route::get('email-templates/{id}/edit', [EmailTemplateController::class, 'edit'])->name('email-templates.edit');
-        Route::put('email-templates/{id}', [EmailTemplateController::class, 'update'])->name('email-templates.update');
-        Route::delete('email-templates/{id}', [EmailTemplateController::class, 'destroy'])->name('email-templates.destroy');
+        Route::get('email-templates/{emailTemplate}/edit', [EmailTemplateController::class, 'edit'])->name('email-templates.edit');
+        Route::put('email-templates/{emailTemplate}', [EmailTemplateController::class, 'update'])->name('email-templates.update');
+        Route::delete('email-templates/{emailTemplate}', [EmailTemplateController::class, 'destroy'])->name('email-templates.destroy');
         
         Route::get('menu-items', [MenuItemController::class, 'index'])->name('menu-items');
         Route::post('menu-items', [MenuItemController::class, 'store'])->name('menu-items.store');

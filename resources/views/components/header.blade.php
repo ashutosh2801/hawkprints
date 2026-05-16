@@ -129,14 +129,14 @@
                     <!-- Shop All Dropdown -->
                     <div class="relative group">
                         <button class="px-4 py-3.5 text-sm font-medium text-gray-700 hover:text-blue-700 transition-colors flex items-center gap-1.5">
-                            Shop All
+                            All Products
                             <svg class="w-3.5 h-3.5 transition-transform group-hover:rotate-180" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
                             </svg>
                         </button>
-                        <div class="absolute left-0 top-full pt-2 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200" style="z-index: 9999;">
-                            <div class="bg-white rounded-xl shadow-xl border border-gray-100 p-6 w-[700px] max-h-[80vh] overflow-y-auto" style="scrollbar-width: thin;">
-                                <div class="border-t border-gray-100 pt-0">
+                        <div class="nav-dropdown absolute left-0 top-full pt-2 transition-all duration-200" style="z-index: 9999;">
+                            <div class="bg-white rounded-xl shadow-xl border border-gray-100 p-6 w-[1000px] max-h-[62vh] overflow-y-auto" style="scrollbar-width: thin;">
+                                <div class="pt-0">
                                     @php
                                         $grouped = [];
                                         foreach($shopProducts as $p) {
@@ -237,7 +237,25 @@
     </div>
 </header>
 
+<style>
+.nav-dropdown { opacity: 0; visibility: hidden; }
+</style>
 <script>
+document.addEventListener('DOMContentLoaded', function() {
+    document.querySelectorAll('.group').forEach(function(group) {
+        var dropdown = group.querySelector('.nav-dropdown');
+        if (!dropdown) return;
+        group.addEventListener('mouseenter', function() {
+            dropdown.style.opacity = '1';
+            dropdown.style.visibility = 'visible';
+        });
+        group.addEventListener('mouseleave', function() {
+            dropdown.style.opacity = '0';
+            dropdown.style.visibility = 'hidden';
+        });
+    });
+});
+
 (function() {
     const nav = document.getElementById('mainNav');
     if (!nav) return;

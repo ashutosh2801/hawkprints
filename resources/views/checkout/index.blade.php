@@ -115,44 +115,44 @@
                     <div class="bg-white rounded-lg shadow-lg p-6">
                         <h2 class="text-xl font-bold mb-4">Billing Address</h2>
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                            <div class="mb-4">
-                <label class="block text-sm font-medium text-gray-700 mb-1">Street Address *</label>
-                <input type="text" name="billing_address" id="billing_address" value="{{ old('billing_address') }}" placeholder="123 Main St" required class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-700">
-                @error('billing_address')
-                <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
-                @enderror
-            </div>
-<div>
-                <label class="block text-sm font-medium text-gray-700 mb-1">City *</label>
-                <input type="text" name="billing_city" id="billing_city" value="{{ old('billing_city') }}" placeholder="Brampton" required class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-700">
-                @error('billing_city')
-                <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
-                @enderror
-            </div>
-            <div>
-                <label class="block text-sm font-medium text-gray-700 mb-1">Province *</label>
-                <input type="text" name="billing_province" id="billing_province" value="{{ old('billing_province') }}" placeholder="Ontario" required class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-700">
-                @error('billing_province')
-                <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
-                @enderror
-            </div>
-            <div>
-                <label class="block text-sm font-medium text-gray-700 mb-1">Postal Code *</label>
-                <input type="text" name="billing_postal" id="billing_postal" value="{{ old('billing_postal') }}" placeholder="L6P 3K9" required class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-700">
-                @error('billing_postal')
-                <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
-                @enderror
-            </div>
-<div>
-                <label class="block text-sm font-medium text-gray-700 mb-1">Country *</label>
-                <select name="billing_country" id="billing_country" required class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-700">
-                    <option value="Canada">Canada</option>
-                    <option value="United States">United States</option>
-                </select>
-                @error('billing_country')
-                <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
-                @enderror
-            </div>
+                            <div class="md:col-span-2">
+                                <label class="block text-sm font-medium text-gray-700 mb-1">Street Address *</label>
+                                <input type="text" name="billing_address" id="billing_address" value="{{ old('billing_address') }}" placeholder="123 Main St" required class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-700">
+                                @error('billing_address')
+                                <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
+                                @enderror
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-1">City *</label>
+                                <input type="text" name="billing_city" id="billing_city" value="{{ old('billing_city') }}" placeholder="Brampton" required class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-700">
+                                @error('billing_city')
+                                <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
+                                @enderror
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-1">Province *</label>
+                                <input type="text" name="billing_province" id="billing_province" value="{{ old('billing_province') }}" placeholder="Ontario" required class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-700">
+                                @error('billing_province')
+                                <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
+                                @enderror
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-1">Postal Code *</label>
+                                <input type="text" name="billing_postal" id="billing_postal" value="{{ old('billing_postal') }}" placeholder="L6P 3K9" required class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-700">
+                                @error('billing_postal')
+                                <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
+                                @enderror
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-1">Country *</label>
+                                <select name="billing_country" id="billing_country" required class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-700">
+                                    <option value="Canada">Canada</option>
+                                    <option value="United States">United States</option>
+                                </select>
+                                @error('billing_country')
+                                <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
+                                @enderror
+                            </div>
                         </div>
                     </div>
 
@@ -266,12 +266,13 @@
                         </div>
 
                         @if($stripeEnabled || $codEnabled)
+                        @php $defaultStripe = $stripeEnabled && (!$codEnabled || old('payment_method') !== 'cod'); @endphp
                         <div class="mt-6">
                             <h3 class="font-medium text-gray-900 mb-3">Payment Method</h3>
                             <div class="space-y-3">
                                 @if($codEnabled)
-                                <label class="flex items-start gap-3 p-4 border rounded-lg cursor-pointer hover:bg-gray-50 transition {{ !$stripeEnabled ? 'border-blue-300 bg-blue-50' : '' }}">
-                                    <input type="radio" name="payment_method" value="cod" class="w-4 h-4 mt-1 text-blue-700 border-gray-300 focus:ring-blue-700" {{ !$stripeEnabled ? 'checked' : '' }}>
+                                <label class="flex items-start gap-3 p-4 border rounded-lg cursor-pointer hover:bg-gray-50 transition {{ !$defaultStripe ? 'border-blue-300 bg-blue-50' : '' }}">
+                                    <input type="radio" name="payment_method" value="cod" class="w-4 h-4 mt-1 text-blue-700 border-gray-300 focus:ring-blue-700" {{ !$defaultStripe ? 'checked' : '' }}>
                                     <div class="flex-1">
                                         <span class="font-medium text-gray-900">Cash on Delivery</span>
                                         <p class="text-sm text-gray-500">Pay when you receive your order</p>
@@ -279,13 +280,13 @@
                                 </label>
                                 @endif
                                 @if($stripeEnabled)
-                                <label class="flex items-start gap-3 p-4 border rounded-lg cursor-pointer hover:bg-gray-50 transition {{ !$codEnabled ? 'border-blue-300 bg-blue-50' : '' }}">
-                                    <input type="radio" name="payment_method" value="stripe" class="w-4 h-4 mt-1 text-blue-700 border-gray-300 focus:ring-blue-700" {{ !$codEnabled ? 'checked' : '' }}>
+                                <label class="flex items-start gap-3 p-4 border rounded-lg cursor-pointer hover:bg-gray-50 transition {{ $defaultStripe ? 'border-blue-300 bg-blue-50' : '' }}">
+                                    <input type="radio" name="payment_method" value="stripe" class="w-4 h-4 mt-1 text-blue-700 border-gray-300 focus:ring-blue-700" {{ $defaultStripe ? 'checked' : '' }}>
                                     <div class="flex-1">
                                         <span class="font-medium text-gray-900">Credit Card</span>
                                         <p class="text-sm text-gray-500">Pay securely with Stripe</p>
                                     </div>
-                                    <div class="flex items-center gap-1">
+                                    <div class="flex items-center gap-1 shrink-0">
                                         <svg class="w-8 h-5" viewBox="0 0 32 20"><rect width="32" height="20" rx="3" fill="#1A1F71"/><path d="M12.5 13.5h-1.8l1.1-6h1.8l-1.1 6z" fill="#fff"/><path d="M8 7.5L6.5 10l-.3-1.5H4.5l2.3 6h1.8L11 7.5H8z" fill="#F7B600"/><path d="M18.5 7.5c-.3-.1-1-.3-1.8-.3-2 0-3.4 1-3.4 2.5 0 1.1 1 1.7 1.7 2 .7.3 1 .5 1 .8 0 .4-.5.6-1 .6-.7 0-1.1-.1-1.7-.4l-.2-.1-.5 1.7c.4.2 1.2.4 2 .4 2.1 0 3.5-1 3.5-2.6 0-.9-.6-1.5-1.7-2-.7-.3-1.1-.5-1.1-.8 0-.3.4-.6 1-.6.6 0 1 .1 1.4.3l.2.1.5-1.6z" fill="#fff"/><path d="M22.5 7.5h-1.4c-.4 0-.7.1-.9.4l-2.6 6h1.9l.4-1h2.3l.2 1h1.7l-1.6-6.4zm-1.4 3.8l.7-2 .5 2h-1.2z" fill="#fff"/><path d="M26 7.5l-.8 4.4-.5-2.4c-.3-.9-.8-1.8-1.4-2.4l1.5 5.4h1.9l.8-5h-1.5z" fill="#fff"/></svg>
                                     </div>
                                 </label>
@@ -295,28 +296,29 @@
                         @endif
 
                         @if($stripeEnabled)
-                        <div id="stripePaymentSection" class="mt-4 p-4 border rounded-lg bg-gray-50 hidden">
-                            <h4 class="font-medium text-gray-900 mb-3 flex items-center gap-2">
-                                <svg class="w-5 h-5 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/></svg>
+                        <div id="stripePaymentSection" class="mt-4 p-5 border border-gray-200 rounded-xl bg-white hidden">
+                            <h4 class="font-semibold text-gray-900 mb-4 flex items-center gap-2">
+                                <svg class="w-5 h-5 text-blue-700" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/></svg>
                                 Card Details
                             </h4>
-                            <div class="space-y-3">
+                            <div id="stripeLoading" class="text-sm text-gray-500 py-4 text-center">Loading card form...</div>
+                            <div id="stripeElements" class="space-y-4 hidden">
                                 <div>
-                                    <label class="block text-sm font-medium text-gray-700 mb-1">Card Number</label>
-                                    <div id="cardNumberElement" class="px-3 py-2 border border-gray-300 rounded-lg bg-white focus-within:ring-2 focus-within:ring-blue-500 focus-within:border-blue-500"></div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-1.5">Card Number</label>
+                                    <div id="cardNumberElement" class="px-3 py-3 border border-gray-300 rounded-lg bg-white focus-within:ring-2 focus-within:ring-blue-500 focus-within:border-blue-500 transition min-h-[48px]"></div>
                                 </div>
                                 <div class="grid grid-cols-2 gap-3">
                                     <div>
-                                        <label class="block text-sm font-medium text-gray-700 mb-1">Expiry Date</label>
-                                        <div id="cardExpiryElement" class="px-3 py-2 border border-gray-300 rounded-lg bg-white focus-within:ring-2 focus-within:ring-blue-500 focus-within:border-blue-500"></div>
+                                        <label class="block text-sm font-medium text-gray-700 mb-1.5">Expiry Date</label>
+                                        <div id="cardExpiryElement" class="px-3 py-3 border border-gray-300 rounded-lg bg-white focus-within:ring-2 focus-within:ring-blue-500 focus-within:border-blue-500 transition min-h-[48px]"></div>
                                     </div>
                                     <div>
-                                        <label class="block text-sm font-medium text-gray-700 mb-1">CVC</label>
-                                        <div id="cardCvcElement" class="px-3 py-2 border border-gray-300 rounded-lg bg-white focus-within:ring-2 focus-within:ring-blue-500 focus-within:border-blue-500"></div>
+                                        <label class="block text-sm font-medium text-gray-700 mb-1.5">CVC</label>
+                                        <div id="cardCvcElement" class="px-3 py-3 border border-gray-300 rounded-lg bg-white focus-within:ring-2 focus-within:ring-blue-500 focus-within:border-blue-500 transition min-h-[48px]"></div>
                                     </div>
                                 </div>
                             </div>
-                            <p id="cardErrors" class="text-red-500 text-sm mt-3 hidden"></p>
+                            <div id="cardErrors" class="mt-3 p-3 bg-red-50 border border-red-200 text-red-700 text-sm rounded-lg hidden"></div>
                         </div>
                         @endif
 
@@ -344,8 +346,12 @@ const stripeEnabled = '{{ $stripeEnabled }}' === '1';
 const stripePublishableKey = '{{ $stripePublishableKey }}';
 let stripe = null;
 let cardElement = null;
+let expiryElement = null;
+let cvcElement = null;
 let paymentIntentClientSecret = null;
 let isStripeSelected = false;
+let stripeInitialized = false;
+let submittingStripe = false;
 
 async function createPaymentIntent() {
     const response = await fetch('{{ route("checkout.create-payment-intent") }}', {
@@ -387,19 +393,45 @@ function setLoading(loading) {
     }
 }
 
+function destroyStripeElements() {
+    if (cardElement) { cardElement.destroy(); cardElement = null; }
+    if (expiryElement) { expiryElement.destroy(); expiryElement = null; }
+    if (cvcElement) { cvcElement.destroy(); cvcElement = null; }
+    stripeInitialized = false;
+}
+
 async function initStripe() {
     if (!stripeEnabled || !stripePublishableKey) return;
     
-    stripe = Stripe(stripePublishableKey);
+    const loadingEl = document.getElementById('stripeLoading');
+    const elementsContainer = document.getElementById('stripeElements');
+    
+    if (stripeInitialized) {
+        loadingEl.classList.add('hidden');
+        elementsContainer.classList.remove('hidden');
+        return;
+    }
+    
+    loadingEl.classList.remove('hidden');
+    elementsContainer.classList.add('hidden');
+    hideCardError();
+    
+    if (!stripe) {
+        stripe = Stripe(stripePublishableKey);
+    }
     
     try {
         paymentIntentClientSecret = await createPaymentIntent();
     } catch (err) {
         console.error('Failed to create payment intent:', err);
+        loadingEl.textContent = 'Failed to load payment form. Please refresh.';
         return;
     }
     
-    if (!paymentIntentClientSecret) return;
+    if (!paymentIntentClientSecret) {
+        loadingEl.textContent = 'Payment service unavailable.';
+        return;
+    }
     
     const elements = stripe.elements({
         clientSecret: paymentIntentClientSecret,
@@ -433,10 +465,10 @@ async function initStripe() {
     cardElement = elements.create('cardNumber', { style: style, showIcon: true });
     cardElement.mount('#cardNumberElement');
     
-    const expiryElement = elements.create('cardExpiry', { style: style });
+    expiryElement = elements.create('cardExpiry', { style: style });
     expiryElement.mount('#cardExpiryElement');
     
-    const cvcElement = elements.create('cardCvc', { style: style });
+    cvcElement = elements.create('cardCvc', { style: style });
     cvcElement.mount('#cardCvcElement');
     
     cardElement.on('change', function(event) {
@@ -446,6 +478,10 @@ async function initStripe() {
             hideCardError();
         }
     });
+    
+    stripeInitialized = true;
+    loadingEl.classList.add('hidden');
+    elementsContainer.classList.remove('hidden');
 }
 
 async function handleStripePayment() {
@@ -502,8 +538,12 @@ document.addEventListener('DOMContentLoaded', function() {
         
         if (isStripeSelected && stripePaymentSection) {
             stripePaymentSection.classList.remove('hidden');
+            if (stripeEnabled && stripePublishableKey) {
+                initStripe();
+            }
         } else if (stripePaymentSection) {
             stripePaymentSection.classList.add('hidden');
+            destroyStripeElements();
         }
         
         paymentRadios.forEach(radio => {
@@ -522,17 +562,21 @@ document.addEventListener('DOMContentLoaded', function() {
     
     updatePaymentSection();
     
-    if (stripeEnabled && stripePublishableKey) {
+    if (stripeEnabled && stripePublishableKey && isStripeSelected) {
         initStripe();
     }
     
     checkoutForm.addEventListener('submit', async function(e) {
+        if (submittingStripe) return;
+        
         if (isStripeSelected && stripe) {
             e.preventDefault();
+            submittingStripe = true;
             hideCardError();
 
             if (!paymentIntentClientSecret || !cardElement) {
                 showCardError('Payment not initialized. Please reload the page and try again.');
+                submittingStripe = false;
                 return;
             }
             
@@ -549,10 +593,13 @@ document.addEventListener('DOMContentLoaded', function() {
                         document.getElementById('shipping_country').value = document.getElementById('billing_country').value;
                     }
                     checkoutForm.submit();
+                } else {
+                    submittingStripe = false;
                 }
             } catch (err) {
                 showCardError('Payment failed: ' + err.message);
                 setLoading(false);
+                submittingStripe = false;
             }
             return;
         }

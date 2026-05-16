@@ -151,6 +151,11 @@
                         Testimonials
                     </a>
 
+                    <a href="/admin/email-templates" class="flex items-center gap-2 px-4 py-2 rounded hover:bg-gray-700 @if(request()->is('admin/email-templates*')) bg-gray-700 @endif">
+                        <svg class="w-5 h-5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/></svg>
+                        Email Templates
+                    </a>
+
                     <div x-data="{ open: {{ request()->is('admin/software-development*') ? 'true' : 'false' }} }" class="space-y-1">
                         <button @click="open = !open" class="w-full flex items-center justify-between gap-2 px-4 py-2 rounded hover:bg-gray-700 @if(request()->is('admin/software-development*')) bg-gray-700 @endif">
                             <div class="flex items-center gap-2 min-w-0">

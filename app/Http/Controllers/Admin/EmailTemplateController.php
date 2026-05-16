@@ -30,6 +30,7 @@ class EmailTemplateController extends Controller
             'is_active' => 'nullable',
             'send_to_customer' => 'nullable',
             'send_to_admin' => 'nullable',
+            'attach_invoice' => 'nullable',
         ]);
 
         EmailTemplate::create([
@@ -40,6 +41,7 @@ class EmailTemplateController extends Controller
             'is_active' => $request->has('is_active'),
             'send_to_customer' => $request->has('send_to_customer'),
             'send_to_admin' => $request->has('send_to_admin'),
+            'attach_invoice' => $request->has('attach_invoice'),
         ]);
 
         return redirect('/admin/email-templates')->with('success', 'Template created!');
@@ -61,6 +63,7 @@ class EmailTemplateController extends Controller
             'is_active' => 'nullable',
             'send_to_customer' => 'nullable',
             'send_to_admin' => 'nullable',
+            'attach_invoice' => 'nullable',
         ]);
 
         $emailTemplate->update([
@@ -71,6 +74,7 @@ class EmailTemplateController extends Controller
             'is_active' => $request->has('is_active'),
             'send_to_customer' => $request->has('send_to_customer'),
             'send_to_admin' => $request->has('send_to_admin'),
+            'attach_invoice' => $request->has('attach_invoice'),
         ]);
 
         return redirect('/admin/email-templates')->with('success', 'Template updated!');

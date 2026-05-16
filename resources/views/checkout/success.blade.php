@@ -67,6 +67,9 @@
                                     @if($item->variant_name)
                                     <p class="text-xs text-gray-500">{{ $item->variant_name }}</p>
                                     @endif
+                                    @foreach($item->pricing_options_display as $po)
+                                    <p class="text-xs text-gray-500">{{ $po['name'] }}: <span class="font-medium">{{ $po['choice'] }}</span></p>
+                                    @endforeach
                                 </td>
                                 <td class="px-4 py-3 text-center">{{ $item->quantity }}</td>
                                 <td class="px-4 py-3 text-right">${{ number_format($item->price, 2) }}</td>

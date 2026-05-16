@@ -41,4 +41,25 @@ class OrderItem extends Model
     {
         return $this->belongsTo(ProductVariant::class, 'product_variant_id');
     }
+
+    public function getPricingOptionsDisplayAttribute(): array
+    {
+        $options = $this->pricing_options ?? [];
+        if (empty($options)) return [];
+
+        $pricingOptions = PricingOption::whereIn('id', array_keys($options))->get()->keyBy('id');
+        $display = [];
+
+        foreach ($options as $optionId => $choiceIndex) {
+            $option = $pricingOptions->get($optionId);
+            if ($option) {
+                $display[] = [
+                    'name' => $option->option_name,
+                    'choice' => $option->getChoiceByIndex((int) $choiceIndex),
+                ];
+            }
+        }
+
+        return $display;
+    }
 }

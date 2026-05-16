@@ -8,6 +8,7 @@ use App\Models\Setting;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\View;
 use Illuminate\Support\Str;
+use Barryvdh\DomPDF\Facade\Pdf;
 
 class EmailService
 {
@@ -46,25 +47,28 @@ class EmailService
             </tfoot>
         </table>';
 
+        $companyName = Setting::get('company_name', 'Five Rivers Print');
+        $companyEmail = Setting::get('company_email', 'info@fiveriversprint.ca');
+
         $data = [
             'customer_name' => $customer,
             'order_number' => $orderNumber,
             'order_total' => $orderTotal,
             'order_items' => $orderItems,
             'order_date' => $orderDate,
+            'company_name' => $companyName,
+            'company_email' => $companyEmail,
         ];
-
-        $companyName = Setting::get('company_name', 'Five Rivers Print');
-        $companyEmail = Setting::get('company_email', 'info@fiveriversprint.ca');
 
         $customerTemplate = EmailTemplate::where('slug', 'order_confirmation')->where('is_active', true)->first();
         if ($customerTemplate && $customerTemplate->send_to_customer) {
             $this->sendEmail(
                 $order->customer_email,
-                $customerTemplate->subject,
+                $this->parseTemplate($customerTemplate->subject, $data),
                 $this->parseTemplate($customerTemplate->body, $data),
                 $companyName,
-                $companyEmail
+                $companyEmail,
+                $customerTemplate->attach_invoice ? $order : null
             );
         }
 
@@ -72,10 +76,11 @@ class EmailService
         if ($adminTemplate && $adminTemplate->send_to_admin) {
             $this->sendEmail(
                 $companyEmail,
-                $adminTemplate->subject . ' - ' . $orderNumber,
+                $this->parseTemplate($adminTemplate->subject, $data) . ' - ' . $orderNumber,
                 $this->parseTemplate($adminTemplate->body, $data),
                 $companyName,
-                $companyEmail
+                $companyEmail,
+                $adminTemplate->attach_invoice ? $order : null
             );
         }
     }
@@ -89,7 +94,35 @@ class EmailService
         return $body;
     }
 
-    protected function sendEmail(string $to, string $subject, string $body, string $fromName, string $fromEmail)
+    public function sendTemplateEmail(string $slug, string $to, array $data, bool $toAdmin = false, ?Order $attachInvoice = null): bool
+    {
+        $template = EmailTemplate::where('slug', $slug)->where('is_active', true)->first();
+        if (!$template) return false;
+
+        $sendTo = $toAdmin ? 'send_to_admin' : 'send_to_customer';
+        if (!$template->$sendTo) return false;
+
+        $companyName = Setting::get('company_name', 'Five Rivers Print');
+        $companyEmail = Setting::get('company_email', 'info@fiveriversprint.ca');
+
+        $data = array_merge($data, [
+            'company_name' => $companyName,
+            'company_email' => $companyEmail,
+        ]);
+
+        $this->sendEmail(
+            $to,
+            $this->parseTemplate($template->subject, $data),
+            $this->parseTemplate($template->body, $data),
+            $companyName,
+            $companyEmail,
+            $attachInvoice
+        );
+
+        return true;
+    }
+
+    protected function sendEmail(string $to, string $subject, string $body, string $fromName, string $fromEmail, ?Order $attachInvoice = null)
     {
         $html = '<!DOCTYPE html>
 <html>
@@ -113,11 +146,19 @@ class EmailService
 </html>';
 
         try {
-            Mail::html($html, function ($message) use ($to, $subject, $fromName, $fromEmail) {
+            Mail::html($html, function ($message) use ($to, $subject, $fromName, $fromEmail, $attachInvoice) {
                 $message->to($to)
                     ->subject($subject)
                     ->from($fromEmail, $fromName)
                     ->replyTo($fromEmail);
+
+                if ($attachInvoice) {
+                    $invoiceService = new InvoiceService();
+                    $pdf = $invoiceService->generate($attachInvoice);
+                    $message->attachData($pdf->output(), 'invoice-' . $attachInvoice->order_number . '.pdf', [
+                        'mime' => 'application/pdf',
+                    ]);
+                }
             });
         } catch (\Exception $e) {
             \Log::error('Email send failed: ' . $e->getMessage());

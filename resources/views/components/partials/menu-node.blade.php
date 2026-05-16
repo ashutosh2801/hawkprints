@@ -13,7 +13,7 @@
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
             </svg>
         </a>
-        <div class="absolute left-0 top-full pt-2 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200" style="z-index: 9999;">
+        <div class="nav-dropdown absolute left-0 top-full pt-2 transition-all duration-200" style="z-index: 9999;">
             <div class="bg-white rounded-xl shadow-xl border border-gray-100 py-2 min-w-56">
                 @foreach($children as $child)
                     @include('components.partials.menu-node', ['item' => $child, 'allItems' => $allItems, 'level' => 1])
@@ -36,7 +36,7 @@
         <svg class="w-3.5 h-3.5 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
         </svg>
-        <div class="absolute left-full top-0 pl-2 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200" style="z-index: 9999;">
+        <div class="nav-dropdown absolute left-full top-0 pl-2 transition-all duration-200" style="z-index: 9999;">
             <div class="bg-white rounded-xl shadow-xl border border-gray-100 py-2 min-w-56">
                 @foreach($children as $child)
                     @include('components.partials.menu-node', ['item' => $child, 'allItems' => $allItems, 'level' => 2])

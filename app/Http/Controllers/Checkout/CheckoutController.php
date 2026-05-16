@@ -190,6 +190,17 @@ class CheckoutController extends Controller
                         'email' => $user->email,
                         'source' => 'checkout',
                     ]);
+
+                    try {
+                        $emailService = new EmailService();
+                        $emailService->sendTemplateEmail('welcome_email', $user->email, [
+                            'customer_name' => $user->name,
+                            'customer_email' => $user->email,
+                            'registered_date' => now()->format('M j, Y'),
+                        ]);
+                    } catch (\Exception $e) {
+                        \Log::error('Welcome email failed: ' . $e->getMessage());
+                    }
                 }
             }
 
@@ -246,6 +257,11 @@ class CheckoutController extends Controller
 
         } catch (\Exception $e) {
             DB::rollback();
+            logger('Checkout process error: ' . $e->getMessage(), [
+                'file' => $e->getFile(),
+                'line' => $e->getLine(),
+                'trace' => $e->getTraceAsString(),
+            ]);
             return back()->with('error', 'Something went wrong. Please try again.')->withInput();
         }
     }

@@ -274,11 +274,14 @@
                                 <span id="totalPrice" class="text-3xl font-bold text-blue-700">${{ number_format($product->base_price ?? 0, 2) }}</span>
                             </div>
 
+                            @php $hasQuantityOption = $product->pricingOptions->contains(function($o) { return strtolower($o->option_type) === 'quantity'; }); @endphp
                             <div class="flex items-center gap-4">
+                                @if(!$hasQuantityOption)
                                 <div>
                                     <label class="block text-sm font-medium text-gray-700 mb-1">Quantity</label>
                                     <input type="number" name="quantity" id="quantity" value="1" min="1" class="w-24 px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-700">
                                 </div>
+                                @endif
                                 <button type="submit" class="flex-1 py-3 bg-blue-700 hover:bg-blue-800 text-white rounded-lg font-semibold">
                                     Add to Cart
                                 </button>
@@ -417,6 +420,7 @@ document.addEventListener('DOMContentLoaded', function() {
     const basePrice = {{ $product->base_price ?? 0 }};
     const quantityInput = document.getElementById('quantity');
     const totalPriceEl = document.getElementById('totalPrice');
+    const hasQuantityOption = {{ $product->pricingOptions->contains(function($o) { return strtolower($o->option_type) === 'quantity'; }) ? 'true' : 'false' }};
 
     const conditionsData = @json($conditionsArray);
 
@@ -598,7 +602,10 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         });
 
-        const quantity = parseInt(quantityInput.value) || 1;
+        let quantity = 1;
+        if (!hasQuantityOption && quantityInput) {
+            quantity = parseInt(quantityInput.value) || 1;
+        }
         totalPrice = totalPrice * quantity;
 
         totalPriceEl.textContent = '$' + totalPrice.toFixed(2);
@@ -625,7 +632,9 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     });
 
-    quantityInput.addEventListener('input', calculatePrice);
+    if (quantityInput) {
+        quantityInput.addEventListener('input', calculatePrice);
+    }
 
     cacheOriginalValues();
     applyConditions();
